@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英検準2級 2024-2 Eメール作文 New Stadium</title>
+<style>
+    body {
+        font-family: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", sans-serif;
+        background-color: #f3e5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        color: #4a148c;
+        margin: 0;
+    }
+
+    h2 { color: #6a1b9a; margin-bottom: 5px; }
+    .sub-title { font-size: 0.9rem; color: #7b1fa2; margin-bottom: 20px; }
+
+    .container {
+        background: white;
+        max-width: 750px;
+        width: 100%;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(106, 27, 154, 0.2);
+        text-align: center;
+    }
+
+    .question-box {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        min-height: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: #fff9c4;
+        border-radius: 15px;
+        padding: 15px;
+        border-left: 8px solid #fbc02d;
+        color: #5f4b00;
+        text-align: left;
+    }
+
+    .answer-area {
+        min-height: 80px;
+        border: 2px dashed #ce93d8;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 15px;
+        background-color: #fdfbff;
+        border-radius: 10px;
+    }
+
+    .final-sentence {
+        font-size: 1.4rem;
+        color: #4a148c;
+        font-weight: bold;
+        padding: 20px;
+        line-height: 1.6;
+    }
+
+    .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
+
+    .word-btn {
+        background-color: #9c27b0;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 3px 0 #7b1fa2;
+    }
+    .word-btn.used { background-color: #e0e0e0; color: #bdbdbd; box-shadow: none; pointer-events: none; }
+
+    .answer-word {
+        background-color: #fbc02d;
+        color: #4a148c;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: grab;
+    }
+
+    .fab-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        gap: 15px;
+        z-index: 1000;
+    }
+    .fab {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid #4a148c;
+        background-color: #fbc02d;
+        color: #4a148c;
+        font-size: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    #ttsBtn { display: none; }
+
+    .result-msg { font-weight: bold; font-size: 1.2rem; min-height: 35px; margin-bottom: 10px; }
+
+    @media print {
+        body { background: white; padding: 0; color: black; }
+        .no-print { display: none !important; }
+        #printable-sheet { display: block !important; width: 100%; }
+        .print-q-block { margin-bottom: 15px; page-break-inside: avoid; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .print-ja { font-weight: bold; font-size: 10pt; margin-bottom: 5px; }
+        .print-words { font-style: italic; font-size: 11pt; color: #333; margin-bottom: 10px; }
+        .print-line { border-bottom: 1px solid black; height: 20px; width: 95%; margin-top: 10px; }
+        .answer-key { page-break-before: always; }
+    }
+    #printable-sheet { display: none; }
+</style>
+</head>
+<body>
+
+<div class="no-print" style="text-align: center;">
+    <h2>英検準2級 2024-2 Eメール作文 New Stadium</h2>
+    <div class="sub-title">並べ替えゲーム</div>
+</div>
+
+<div class="container no-print">
+    <div id="game-ui">
+        <div id="questionHeader" style="font-weight: bold; margin-bottom: 10px;"></div>
+        <div class="question-box" id="questionText"></div>
+        <div class="result-msg" id="resultMsg"></div>
+        <div class="answer-area" id="answerArea" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="word-bank" id="wordBank"></div>
+        <div style="margin-top: 20px;">
+            <button class="fab" id="checkBtn" onclick="checkAnswer()" style="width: auto; border-radius: 30px; padding: 0 30px; font-size: 1rem; margin: 0 auto;">Check Answer</button>
+            <button class="fab" id="nextBtn" onclick="nextQuestion()" style="display:none; width: auto; border-radius: 30px; padding: 0 30px; font-size: 1rem; margin: 0 auto; background-color: #4a148c; color: white;">Next Question</button>
+        </div>
+    </div>
+</div>
+
+<div class="fab-container no-print">
+    <button class="fab" id="ttsBtn" onclick="speakPhrase()" title="女性の声で再生">🔊</button>
+    <button class="fab" onclick="shuffleAll()" title="問題と単語をシャッフル">🔀</button>
+    <button class="fab" onclick="window.print()" title="PDF/印刷用表示">🖨️</button>
+</div>
+
+<div id="printable-sheet">
+    <h1 style="text-align: center; border-bottom: 2px solid black;font-size: 16pt;">英検準2級 2024-1 Eメール作文 New Stadium</h1>
+    <div id="print-content"></div>
+    <div class="answer-key">
+        <h3>【Answer Key】</h3>
+        <div id="print-answers"></div>
+    </div>
+</div>
+
+<script>
+let quizDataOriginal = [
+    { ja: "スタジアムツアーはありますか？", en: "Do they offer stadium tours?" },
+    { ja: "舞台裏のエリアを見てみたいです。", en: "I would love to see the behind-the-scenes areas." },
+    { ja: "公共交通機関（バスや電車など）で行けますか？", en: "Can you get there by public transportation, such as bus or train?" },
+    { ja: "近くに駅があるといいな。", en: ["I hope there is a nearby train station.", "I hope there is a train station nearby."] },
+    { ja: "新しいスタジアムは大きいと聞きました。何人収容できますか？", en: "I heard the new stadium is big. How many people can it hold?" },
+    { ja: "その新しいスタジアムでは、他にどんなスポーツが行われますか？", en: "What other sports are played at the new stadium?" },
+    { ja: "子供がラグビーの試合を観るためのチケットはいくらですか？", en: "How much are the tickets for children to see a rugby game?" },
+    { ja: "それ（チケット）が高くないといいのですが。", en: "I hope they are not expensive." },
+    { ja: "スタジアム内には売店やショップがたくさんありますか？", en: "Are there many food stalls and shops in the stadium?" },
+    { ja: "そのスタジアムはいつ完成しましたか？", en: "When was the stadium finished?" }
+];
+
+let quizData = [...quizDataOriginal];
+let currentIdx = 0;
+let userSelection = [];
+let isCorrect = false;
+
+function init() {
+    renderQuestion();
+    preparePrint();
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function shuffleAll() {
+    quizData = shuffle([...quizDataOriginal]);
+    currentIdx = 0;
+    renderQuestion();
+}
+
+function renderQuestion() {
+    isCorrect = false;
+    userSelection = [];
+    document.getElementById('ttsBtn').style.display = 'none';
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('checkBtn').style.display = 'block';
+    document.getElementById('resultMsg').textContent = "";
+    document.getElementById('questionHeader').textContent = `Question ${currentIdx + 1} / ${quizData.length}`;
+    
+    const q = quizData[currentIdx];
+    document.getElementById('questionText').innerHTML = q.ja;
+
+    // enが配列（複数正解あり）の場合は最初の文をベースにシャッフル用ワードを作成
+    const baseEn = Array.isArray(q.en) ? q.en[0] : q.en;
+    let words = baseEn.replace(/([.,?])/g, " $1").split(/\s+/).filter(w => w.length > 0);
+    let shuffled = shuffle([...words]);
+
+    const bank = document.getElementById('wordBank');
+    bank.innerHTML = "";
+    shuffled.forEach((w, i) => {
+        const btn = document.createElement('button');
+        btn.className = "word-btn";
+        btn.textContent = w;
+        btn.onclick = () => addWord(w, btn);
+        bank.appendChild(btn);
+    });
+    renderAnswer();
+}
+
+function addWord(word, btn) {
+    userSelection.push({ text: word, btn: btn });
+    btn.classList.add('used');
+    renderAnswer();
+}
+
+function renderAnswer() {
+    const area = document.getElementById('answerArea');
+    area.innerHTML = "";
+    if (userSelection.length === 0 && !isCorrect) {
+        area.innerHTML = '<span style="color:#aaa;">タップで追加 / ドラッグで割り込み挿入</span>';
+    }
+
+    userSelection.forEach((obj, i) => {
+        const span = document.createElement('button');
+        span.className = "answer-word";
+        span.textContent = obj.text;
+        span.draggable = true;
+        span.ondragstart = (e) => e.dataTransfer.setData("text/plain", i);
+        span.onclick = () => removeWord(i);
+        area.appendChild(span);
+    });
+}
+
+function allowDrop(e) { e.preventDefault(); }
+function drop(e) {
+    e.preventDefault();
+    const fromIdx = e.dataTransfer.getData("text/plain");
+    const target = e.target;
+    if (target.className === "answer-word") {
+        const toIdx = Array.from(target.parentNode.children).indexOf(target);
+        const item = userSelection.splice(fromIdx, 1)[0];
+        userSelection.splice(toIdx, 0, item);
+        renderAnswer();
+    }
+}
+
+function removeWord(i) {
+    userSelection[i].btn.classList.remove('used');
+    userSelection.splice(i, 1);
+    renderAnswer();
+}
+
+function checkAnswer() {
+    const userStr = userSelection.map(o => o.text).join(" ").replace(/\s+([.,?])/g, "$1");
+    const q = quizData[currentIdx];
+    
+    // 正解判定：配列ならどれかに一致すればOK、文字列ならそれと一致すればOK
+    let isPerfect = false;
+    let correctTextForTts = "";
+
+    if (Array.isArray(q.en)) {
+        isPerfect = q.en.some(sentence => sentence === userStr);
+        correctTextForTts = userStr; // ユーザーが作った方の語順で読み上げる
+    } else {
+        isPerfect = (userStr === q.en);
+        correctTextForTts = q.en;
+    }
+
+    if (isPerfect) {
+        isCorrect = true;
+        document.getElementById('resultMsg').innerHTML = "<span style='color:green;'>Perfect!</span>";
+        document.getElementById('answerArea').innerHTML = `<div class="final-sentence" id="orderPhrase">${userStr}</div>`;
+        document.getElementById('wordBank').innerHTML = "";
+        document.getElementById('ttsBtn').style.display = 'flex';
+        document.getElementById('checkBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'block';
+    } else {
+        document.getElementById('resultMsg').innerHTML = "<span style='color:red;'>Try again!</span>";
+    }
+}
+
+function speak(text) {
+    const synth = window.speechSynthesis;
+    synth.cancel(); 
+
+    const uttr = new SpeechSynthesisUtterance(text);
+    uttr.lang = "en-US";
+    uttr.rate = 0.8; 
+    uttr.pitch = 1.0; 
+
+    const voices = synth.getVoices();
+    const targetVoice = voices.find(v => v.name === 'Google US English') || 
+                        voices.find(v => v.name === 'Samantha') || 
+                        voices.find(v => v.lang === 'en-US') ||
+                        voices.find(v => v.lang.startsWith('en'));
+
+    if (targetVoice) {
+        uttr.voice = targetVoice;
+    }
+    synth.speak(uttr);
+}
+
+function speakPhrase() {
+    const phrase = document.getElementById('orderPhrase').innerText;
+    speak(phrase);
+}
+
+function nextQuestion() {
+    currentIdx++;
+    if (currentIdx < quizData.length) renderQuestion();
+    else {
+        document.getElementById('game-ui').innerHTML = "<h2>全問クリア！おめでとうございます！</h2>";
+    }
+}
+
+function preparePrint() {
+    const container = document.getElementById('print-content');
+    const keyContainer = document.getElementById('print-answers');
+    container.innerHTML = "";
+    keyContainer.innerHTML = "";
+    quizDataOriginal.forEach((q, i) => {
+        const baseEn = Array.isArray(q.en) ? q.en[0] : q.en;
+        let words = shuffle(baseEn.replace(/([.,?])/g, " $1").split(/\s+/).filter(w => w.length > 0));
+        container.innerHTML += `
+            <div class="print-q-block">
+                <div class="print-ja">${i+1}. ${q.ja}</div>
+                <div class="print-words">(${words.join(" / ")})</div>
+                <div class="print-line"></div>
+            </div>
+        `;
+        keyContainer.innerHTML += `<div>${i+1}. ${Array.isArray(q.en) ? q.en.join(" / ") : q.en}</div>`;
+    });
+}
+
+window.speechSynthesis.onvoiceschanged = () => {};
+init();
+</script>
+</body>
+</html>
