@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英検準2級 2024-2 Eメール作文 New Stadium -Part 2</title>
+<style>
+    body {
+        font-family: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", sans-serif;
+        background-color: #f3e5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        color: #4a148c;
+        margin: 0;
+    }
+    h2 { color: #6a1b9a; margin-bottom: 5px; }
+    .sub-title { font-size: 0.9rem; color: #7b1fa2; margin-bottom: 20px; }
+    .container {
+        background: white;
+        max-width: 750px;
+        width: 100%;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(106, 27, 154, 0.2);
+        text-align: center;
+    }
+    .question-box {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        min-height: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: #fffde7; 
+        border-radius: 15px;
+        padding: 15px;
+        border-left: 8px solid #fbc02d;
+        color: #5f4b00;
+        text-align: left;
+    }
+    .answer-area {
+        min-height: 80px;
+        border: 2px dashed #ce93d8;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 15px;
+        background-color: #fdfbff;
+        border-radius: 10px;
+    }
+    .final-sentence {
+        font-size: 1.4rem;
+        color: #4a148c;
+        font-weight: bold;
+        padding: 20px;
+        line-height: 1.6;
+    }
+    .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .word-btn {
+        background-color: #9c27b0;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 3px 0 #7b1fa2;
+    }
+    .word-btn.used { background-color: #e0e0e0; color: #bdbdbd; box-shadow: none; pointer-events: none; }
+    .answer-word {
+        background-color: #fffff0; 
+        color: #4a148c;
+        border: 1px solid #eee8aa;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: grab;
+    }
+    .fab-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        gap: 15px;
+        z-index: 1000;
+    }
+    .fab {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid #4a148c;
+        background-color: #fbc02d;
+        color: #4a148c;
+        font-size: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    #nextBtn {
+        background-color: #4a148c;
+        color: white;
+        border: 3px solid #fbc02d;
+        font-weight: bold;
+    }
+    .result-msg { font-weight: bold; font-size: 1.2rem; min-height: 35px; margin-bottom: 10px; }
+    #printable-sheet { display: none !important; }
+    @media print {
+        * { color: black !important; background: transparent !important; box-shadow: none !important; border-color: black !important; }
+        body { background: white; padding: 0; margin: 0; display: block !important; }
+        .no-print, .fab-container, .container, h2, .sub-title { display: none !important; }
+        #printable-sheet { display: block !important; width: 100%; padding: 20px; }
+        h1 { font-size: 18pt; border-bottom: 1px solid black; padding-bottom: 5px; margin-bottom: 20px; text-align: center; }
+        .print-q-block { margin-bottom: 20px; page-break-inside: avoid; border-bottom: 0.5px solid #ccc; padding-bottom: 10px; }
+        .print-ja { font-weight: bold; font-size: 11pt; margin-bottom: 8px; }
+        .print-words { font-style: italic; font-size: 11pt; margin-bottom: 10px; }
+        .print-line { border-bottom: 1px solid black; height: 25px; width: 98%; margin-top: 10px; }
+        .answer-key { margin-top: 40px; border-top: 2px solid black; padding-top: 10px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="no-print" style="text-align: center;">
+    <h2>英検準2級 2024-2 Eメール作文 New Stadium -Part 2</h2>
+    <div class="sub-title">並べ替え練習</div>
+</div>
+
+<div class="container no-print">
+    <div id="game-ui">
+        <div id="questionHeader" style="font-weight: bold; margin-bottom: 10px;"></div>
+        <div class="question-box" id="questionText"></div>
+        <div class="result-msg" id="resultMsg"></div>
+        <div class="answer-area" id="answerArea" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="word-bank" id="wordBank"></div>
+        <div style="margin-top: 20px;">
+            <button class="fab" id="checkBtn" onclick="checkAnswer()" style="width: auto; border-radius: 30px; padding: 0 30px; font-size: 1rem; margin: 0 auto;">Check Answer</button>
+            <button class="fab" id="nextBtn" onclick="nextQuestion()" style="display:none; width: auto; border-radius: 30px; padding: 0 30px; font-size: 1rem; margin: 0 auto;">Next Question</button>
+        </div>
+    </div>
+</div>
+
+<div class="fab-container no-print">
+    <button class="fab" id="ttsBtn" onclick="speakPhrase()" title="音声再生" style="display: none;">🔊</button>
+    <button class="fab" onclick="shuffleAll()" title="シャッフル">🔀</button>
+    <button class="fab" onclick="window.print()" title="印刷">🖨️</button>
+</div>
+
+<div id="printable-sheet">
+    <h1>英検準2級 2024-2 Eメール作文 New Stadium -Part 2</h1>
+    <div id="print-content"></div>
+    <div class="answer-key">
+        <h3>【Answer Key】</h3>
+        <div id="print-answers"></div>
+    </div>
+</div>
+
+<script>
+let quizDataOriginal = [
+    { ja: "君の質問についてだけど、もっと多くの人がラグビーを観るようになると思うよ。", en: "About your question, I think more people will watch rugby." },
+    { ja: "君の質問に答えるね。ラグビーはワクワクするスポーツだから君に賛成だよ。", en: "I'll answer your question. I agree with you because rugby is an exciting sport." },
+    { ja: "多くの都市で新しいスタジアムがオープンしているので、人々はラグビーの試合を観る機会が増えています。", en: "New stadiums are opening in many cities, so people have more chances to watch rugby games." },
+    { ja: "今は有名なラグビー選手がたくさんいて、ラグビーファンになる子供が増えています。中にはプロのラグビー選手になることを夢見る子もいます。", en: "There are many famous rugby players now, so more children are becoming rugby fans, and some even dream of becoming professional rugby players." },
+    { ja: "テレビでラグビーの試合を見かけることはめったにないので、多くの人はまだこのスポーツに馴染みがありません。", en: "We seldom see rugby games on TV, so many people are still not familiar with the sport." },
+    { ja: "多くの人にとって、ラグビーのルールを理解するのは複雑すぎます。", en: "For many people, rugby rules are too complicated to understand." },
+    // 第7問：修正案を反映
+    { ja: "チケットはとても高いと思うので、多くの人が試合を観るためにそれを買うことができません。", en: "I think the tickets are very expensive, so many people can't buy them to see the games." },
+    { ja: "その新しいスタジアムはどのくらいの大きさなの？", en: "How large is the new stadium?" },
+    { ja: "そこには何か食べ物のお店はあるのかな？", en: "Are there any food shops in the stadium?" }
+];
+
+let quizData = [...quizDataOriginal];
+let currentIdx = 0;
+let userSelection = [];
+let isCorrect = false;
+
+function init() { renderQuestion(); preparePrint(); }
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+function shuffleAll() { quizData = shuffle([...quizDataOriginal]); currentIdx = 0; renderQuestion(); }
+function renderQuestion() {
+    isCorrect = false; userSelection = [];
+    document.getElementById('ttsBtn').style.display = 'none';
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('checkBtn').style.display = 'block';
+    document.getElementById('resultMsg').textContent = "";
+    document.getElementById('questionHeader').textContent = `Exercise ${currentIdx + 1} / ${quizData.length}`;
+    const q = quizData[currentIdx];
+    document.getElementById('questionText').innerHTML = q.ja;
+    let words = q.en.replace(/([.,?'])/g, " $1").split(/\s+/).filter(w => w.length > 0);
+    let shuffled = shuffle([...words]);
+    const bank = document.getElementById('wordBank');
+    bank.innerHTML = "";
+    shuffled.forEach((w) => {
+        const btn = document.createElement('button');
+        btn.className = "word-btn"; btn.textContent = w;
+        btn.onclick = () => addWord(w, btn);
+        bank.appendChild(btn);
+    });
+    renderAnswer();
+}
+function addWord(word, btn) {
+    userSelection.push({ text: word, btn: btn });
+    btn.classList.add('used');
+    renderAnswer();
+}
+function renderAnswer() {
+    const area = document.getElementById('answerArea');
+    area.innerHTML = "";
+    if (userSelection.length === 0 && !isCorrect) {
+        area.innerHTML = '<span style="color:#aaa;">タップで追加 / ドラッグで入れ替え</span>';
+    }
+    userSelection.forEach((obj, i) => {
+        const span = document.createElement('button');
+        span.className = "answer-word"; span.textContent = obj.text;
+        span.draggable = true;
+        span.ondragstart = (e) => e.dataTransfer.setData("text/plain", i);
+        span.onclick = () => removeWord(i);
+        area.appendChild(span);
+    });
+}
+function allowDrop(e) { e.preventDefault(); }
+function drop(e) {
+    e.preventDefault();
+    const fromIdx = e.dataTransfer.getData("text/plain");
+    const target = e.target;
+    if (target.className === "answer-word") {
+        const toIdx = Array.from(target.parentNode.children).indexOf(target);
+        const item = userSelection.splice(fromIdx, 1)[0];
+        userSelection.splice(toIdx, 0, item);
+        renderAnswer();
+    }
+}
+function removeWord(i) {
+    userSelection[i].btn.classList.remove('used');
+    userSelection.splice(i, 1);
+    renderAnswer();
+}
+function checkAnswer() {
+    const userStr = userSelection.map(o => o.text).join(" ").replace(/\s+([.,?'])/g, "$1").replace(/I ' ll/g, "I'll").replace(/can ' t/g, "can't");
+    const q = quizData[currentIdx];
+    if (userStr === q.en) {
+        isCorrect = true;
+        document.getElementById('resultMsg').innerHTML = "<span style='color:green;'>Perfect!</span>";
+        document.getElementById('answerArea').innerHTML = `<div class="final-sentence" id="orderPhrase">${userStr}</div>`;
+        document.getElementById('wordBank').innerHTML = "";
+        document.getElementById('ttsBtn').style.display = 'flex';
+        document.getElementById('checkBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'block';
+    } else {
+        document.getElementById('resultMsg').innerHTML = "<span style='color:red;'>Try again!</span>";
+    }
+}
+function speakPhrase() {
+    const phrase = document.getElementById('orderPhrase').innerText;
+    const synth = window.speechSynthesis;
+    const uttr = new SpeechSynthesisUtterance(phrase);
+    uttr.lang = "en-US"; uttr.rate = 0.8;
+    synth.speak(uttr);
+}
+function nextQuestion() {
+    currentIdx++;
+    if (currentIdx < quizData.length) renderQuestion();
+    else document.getElementById('game-ui').innerHTML = "<h2>Great Job! 全問クリアです！</h2>";
+}
+function preparePrint() {
+    const container = document.getElementById('print-content');
+    const ansContainer = document.getElementById('print-answers');
+    container.innerHTML = "";
+    ansContainer.innerHTML = "";
+    quizDataOriginal.forEach((q, i) => {
+        let words = shuffle(q.en.replace(/([.,?'])/g, " $1").split(/\s+/).filter(w => w.length > 0));
+        container.innerHTML += `<div class="print-q-block"><div class="print-ja">${i+1}. ${q.ja}</div><div class="print-words">(${words.join(" / ")})</div><div class="print-line"></div></div>`;
+        ansContainer.innerHTML += `<div class="answer-key-item">${i+1}. ${q.en}</div>`;
+    });
+}
+init();
+</script>
+</body>
+</html>
