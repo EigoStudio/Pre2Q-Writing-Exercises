@@ -3,413 +3,404 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>並べ替え問題　動名詞と不定詞の文</title>
+<title>Eiken Pre-2nd: Writing Exercise</title>
 <style>
-  /* --- フォント設定 --- */
-  body {
-    font-family: "Chalkboard SE", "Comic Sans MS", "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "HGMaruGothicMPRO", "Meiryo", sans-serif;
-    background-color: #e3f2fd;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    color: #333;
-    margin: 0;
-  }
+    :root {
+        --primary-purple: #4a148c;
+        --soft-purple: #f3e5f5;
+        --accent-yellow: #fff9c4;
+        --border-purple: #ce93d8;
+        --correct-green: #2e7d32;
+        --wrong-red: #c62828;
+        --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+    }
 
-  button, input, textarea, .word-btn, .answer-word {
-    font-family: "Chalkboard SE", "Comic Sans MS", "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "HGMaruGothicMPRO", "Meiryo", sans-serif;
-  }
-
-  h2 {
-    color: #1565c0;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  .sub-title {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 20px;
-  }
-  .container {
-    background: white;
-    max-width: 600px;
-    width: 100%;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    text-align: center;
-  }
-
-  /* 印刷ボタン */
-  .print-launch-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #546e7a;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-  .print-launch-btn:hover { background-color: #455a64; }
-
-  /* ゲームUI */
-  .question-box {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    min-height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #bbdefb;
-    border-radius: 10px;
-    padding: 15px;
-    border-left: 5px solid #1976d2;
-    color: #0d47a1;
-  }
-  .answer-area {
-    min-height: 60px;
-    border-bottom: 2px solid #90caf9;
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px;
-    background-color: #fafafa;
-    border-radius: 5px;
-  }
-  .word-bank {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .word-btn {
-    background-color: #42a5f5;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 20px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: transform 0.1s;
-    user-select: none;
-  }
-  .word-btn:active { transform: scale(0.95); }
-  .word-btn.used { background-color: #cfd8dc; color: #b0bec5; cursor: default; pointer-events: none; }
-  
-  .answer-word {
-    background-color: #1e88e5;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    animation: popIn 0.2s ease;
-  }
-  @keyframes popIn {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  .controls { margin-top: 20px; }
-  button.action-btn {
-    padding: 12px 30px;
-    font-size: 1.1rem;
-    background-color: #43a047;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  }
-  button.action-btn:hover { background-color: #2e7d32; }
-  .result-msg { margin-top: 15px; font-weight: bold; font-size: 1.2rem; height: 30px; }
-  .correct { color: #2e7d32; }
-  .wrong { color: #c62828; }
-  .progress-container { width: 100%; background-color: #e0e0e0; border-radius: 10px; margin-bottom: 20px; height: 10px; }
-  .progress-bar { height: 100%; background-color: #1976d2; border-radius: 10px; width: 0%; transition: width 0.3s; }
-
-  /* 印刷用エリア */
-  #printable-sheet { display: none; }
-
-  /* --- 印刷時スタイル --- */
-  @media print {
-    .container, h2, .sub-title, .print-launch-btn { display: none !important; }
     body {
-      background-color: white;
-      padding: 0;
-      margin: 0;
-      color: black;
-      font-family: "Chalkboard SE", "Comic Sans MS", "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", sans-serif;
+        font-family: var(--base-font);
+        background-color: #faf7ff;
+        color: var(--primary-purple);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        margin: 0;
     }
-    #printable-sheet {
-      display: block;
-      width: 100%;
-      padding: 20px 40px;
-      box-sizing: border-box;
+
+    /* --- PC / Base Layout (Changes NOT applied here) --- */
+    header { text-align: center; margin-bottom: 25px; width: 100%; max-width: 900px; }
+    h1 { font-size: 1.6rem; margin-bottom: 5px; color: var(--primary-purple); }
+    .sub-title { font-size: 0.9rem; color: #666; margin-bottom: 20px; font-weight: normal; }
+
+    .control-panel {
+        display: flex; align-items: center; justify-content: center; gap: 20px;
+        background: rgba(255,255,255,0.5); padding: 10px 20px; border-radius: 50px; display: inline-flex;
     }
-    .sheet-header {
-      text-align: center;
-      border-bottom: 2px solid #333;
-      margin-bottom: 30px;
-      padding-bottom: 10px;
+
+    .settings { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: bold; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #9c27b0; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    .tabs { display: flex; gap: 8px; }
+    .tab-btn {
+        padding: 8px 18px; border-radius: 20px; border: 2px solid var(--primary-purple);
+        background: white; color: var(--primary-purple); cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.3s;
     }
-    .sheet-title {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 0;
+    .tab-btn.active { background: var(--primary-purple); color: white; }
+
+    .container {
+        background: white; max-width: 900px; width: 100%; padding: 40px; border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;
     }
-    .sheet-name {
-      margin-top: 10px;
-      text-align: right;
-      font-size: 14px;
+
+    .question-box {
+        font-size: 1.1rem; background-color: var(--accent-yellow); border-bottom: 4px solid #fbc02d;
+        padding: 30px 20px; border-radius: 20px; margin-bottom: 25px; text-align: center;
+        min-height: 40px; display: flex; align-items: center; justify-content: center;
     }
-    .sheet-question {
-      margin-bottom: 20px;
-      page-break-inside: avoid;
+
+    .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 700px; margin: 0 auto; }
+    .choice-btn, .word-btn {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 15px 20px; border-radius: 25px; cursor: pointer; font-size: 1.1rem; font-family: var(--base-font); font-weight: bold; transition: all 0.2s;
     }
-    .q-text {
-      font-size: 16px;
-      margin-bottom: 8px;
-      font-weight: bold;
+    .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+    .word-btn.used { visibility: hidden; pointer-events: none; }
+
+    .answer-area {
+        min-height: 100px; border: 3px dashed var(--border-purple); border-radius: 20px; padding: 20px;
+        margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; background: #fff;
     }
-    .q-line {
-      border-bottom: 1px solid #333;
-      height: 35px;
-      width: 100%;
+
+    .answer-word {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 10px 18px; border-radius: 15px; cursor: grab; font-size: 1.1rem; font-weight: bold;
     }
-    .answer-key-section {
-      margin-top: 40px;
-      border-top: 1px dashed #999;
-      padding-top: 20px;
-      font-size: 12px;
-      color: #555;
+
+    .final-sentence {
+        font-size: 1.6rem; color: var(--primary-purple); font-weight: bold; padding: 20px;
+        line-height: 1.8; text-align: left; max-width: 800px; margin: 0 auto;
     }
-    .key-item { margin-bottom: 5px; }
-  }
+
+    .action-btn {
+        background: #fbc02d; color: var(--primary-purple); border: none; padding: 18px 50px;
+        border-radius: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #f9a825; margin-top: 15px;
+    }
+    #tries-left { font-weight: bold; color: var(--wrong-red); margin-top: 10px; font-size: 0.9rem; }
+
+    /* --- MOBILE SPECIFIC ADJUSTMENTS (ONLY for small screens) --- */
+    @media screen and (max-width: 600px) {
+        body { padding: 10px; }
+        h1 { font-size: 1.1rem; }
+        .sub-title { font-size: 0.75rem; margin-bottom: 10px; }
+        .control-panel { padding: 5px 15px; transform: scale(0.9); }
+        .container { padding: 15px; border-radius: 20px; }
+        .question-box { padding: 15px 10px; margin-bottom: 15px; font-size: 0.9rem; border-bottom-width: 3px; }
+        .choices-grid { gap: 8px; }
+        .choice-btn, .word-btn { padding: 10px 12px; font-size: 0.85rem; border-radius: 15px; }
+        .answer-area { min-height: 60px; padding: 10px; margin-bottom: 10px; }
+        .answer-word { padding: 6px 10px; font-size: 0.85rem; border-radius: 10px; }
+        .action-btn { padding: 12px 30px; font-size: 1rem; margin-top: 5px; }
+        .final-sentence { font-size: 1.1rem; padding: 10px; line-height: 1.5; }
+    }
+
+    /* --- Print Styles (KEEP UNTOUCHED) --- */
+    #print-area { display: none; }
+    @media print {
+        .container, header, .no-print { display: none !important; }
+        #print-area { display: block; color: black; background: white; width: 100%; font-family: var(--base-font); }
+        .print-page { page-break-after: always; padding: 10px 30px; }
+        .print-title { font-size: 1.4rem; text-align: center; border-bottom: 1px solid #000; margin-bottom: 15px; padding-bottom: 5px; }
+        .print-sub { font-size: 0.8rem; text-align: left; margin-bottom: 15px; color: #333; }
+        .user-info { font-size: 0.9rem; margin-bottom: 15px; text-align: right; }
+        .print-vocab-q { margin-bottom: 12px; font-size: 0.9rem; display: flex; align-items: flex-end; }
+        .vocab-jp { width: 45%; }
+        .vocab-line { flex-grow: 1; border-bottom: 1px solid #000; height: 24px; }
+        .print-sentence-q { margin-bottom: 30px; }
+        .sentence-ja { font-size: 0.9rem; margin-bottom: 2px; }
+        .sentence-choices { font-style: italic; font-size: 0.85rem; margin-bottom: 8px; }
+        .sentence-line { border-bottom: 1px solid #000; height: 35px; margin-top: 10px; }
+    }
 </style>
 </head>
 <body>
 
-<button class="print-launch-btn" onclick="window.print()">🖨️ プリントを作成</button>
+<header class="no-print">
+    <h1>英検準2級 Useful Expressions and Writing Exercise</h1>
+    <div class="sub-title">Many people go to foreign countries to study English. Do you think it is a good way to study English?</div>
+    
+    <div class="control-panel">
+        <div class="settings">
+            <span>Audio</span>
+            <label class="switch">
+                <input type="checkbox" id="audioToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-vocab" onclick="switchMode('vocab')">Vocabulary</button>
+            <button class="tab-btn" id="tab-reorder" onclick="switchMode('reorder')">Sentences</button>
+        </div>
+    </div>
+</header>
 
-<h2>並べ替え問題　動名詞と不定詞の文</h2>
-<div class="sub-title">動名詞と不定詞の文　語順に慣れよう</div>
-
-<div class="container">
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
-  <div class="question-box" id="questionText">Load Question...</div>
-  <div class="answer-area" id="answerArea">
-    <span style="color:#aaa; font-size:0.9rem; align-self:center;">単語をタップして並べてください</span>
-  </div>
-  <div class="word-bank" id="wordBank"></div>
-  <div class="result-msg" id="resultMsg"></div>
-  <div class="controls">
-    <button class="action-btn" id="checkBtn" onclick="checkAnswer()">Check Answer</button>
-    <button class="action-btn" id="nextBtn" onclick="nextQuestion()" style="display:none; background-color: #1565c0;">Next Question</button>
-  </div>
+<div class="container no-print">
+    <div id="quiz-ui">
+        <div class="question-box" id="questionText">Loading...</div>
+        <div id="interactive-area"></div>
+        <div id="tries-left"></div>
+        <div id="resultMsg" style="margin: 20px 0; font-size: 1.2rem; font-weight: bold;"></div>
+        <button class="action-btn" id="mainActionBtn" onclick="handleMainAction()" disabled>Check Answer</button>
+    </div>
+    <button onclick="window.print()" style="margin-top:20px; background:none; border:none; text-decoration:underline; cursor:pointer; color:#777; font-size: 0.75rem;">Worksheet (A4 2枚) を印刷する</button>
 </div>
 
-<div id="printable-sheet">
-  <div class="sheet-header">
-    <h1 class="sheet-title">動名詞と不定詞の文</h1>
-    <div class="sheet-name">Name: __________________________ / Date: __________</div>
-  </div>
-  <div id="sheet-content"></div>
-  <div class="answer-key-section">
-    <h3>Answer Key</h3>
-    <div id="sheet-answers"></div>
-  </div>
+<div id="print-area">
+    <div class="print-page">
+        <div class="print-title">英検準2級 Useful Expressions: Vocabulary</div>
+        <div class="print-sub">Topic: Studying English Abroad</div>
+        <div class="user-info">Date: ________ Name: ________________</div>
+        <div id="print-vocab-content"></div>
+    </div>
+    <div class="print-page">
+        <div class="print-title">英検準2級 Writing Exercise: Sentences</div>
+        <div class="print-sub">Topic: Many people go to foreign countries to study English. Do you think it is a good way to study English?</div>
+        <div class="user-info">Date: ________ Name: ________________</div>
+        <div id="print-sentence-content"></div>
+    </div>
 </div>
 
 <script>
-  const quizData = [
-    { ja: "1. オンラインで物を買うことは便利です。", en: "Buying things online is convenient." },
-    { ja: "2. 生徒たちは情報を得るためにインターネットを使います。", en: "Students use the internet to get information." },
-    { ja: "3. 自然を守ることは必要です。", en: "It is necessary to protect nature." },
-    { ja: "4. スポーツをすることは私たちの健康に良いです。", en: "Playing sports is good for our health." },
-    { ja: "5. 人々はリラックスするために公園へ行きます。", en: "People go to the park to relax." },
-    { ja: "6. 毎日朝食を食べることは大切です。", en: "It is important to eat breakfast every day." },
-    { ja: "7. 外国語を学ぶことは役に立ちます。", en: "Learning foreign languages is useful." },
-    { ja: "8. 学生には学ぶべきスキルがたくさんあります。", en: "Students have many skills to learn." },
-    { ja: "9. 私たちは電気の無駄遣いをやめるべきです。", en: "We should stop wasting electricity." },
-    { ja: "10. 学生がアルバイトをすることは難しいです。", en: "It is difficult for students to work part-time." }
-  ];
+const vocabData = [
+    { jp: "自然な英語", en: "natural English" },
+    { jp: "生きた英語（本物の英語）", en: "real English" },
+    { jp: "素晴らしい方法", en: "a great way" },
+    { jp: "～を～で囲む（～漬けにする）", en: "surround oneself with" },
+    { jp: "一日中", en: "all day long" },
+    { jp: "自然な表現", en: "natural expressions" },
+    { jp: "正しい発音", en: "correct pronunciation" },
+    { jp: "教科書には載っていない", en: "not found in textbooks" },
+    { jp: "生きるために英語で意思疎通する", en: "communicate in English to live" },
+    { jp: "意思疎通の能力", en: "communication skills" },
+    { jp: "向上させる / 上達する", en: "improve" },
+    { jp: "とても素早く", en: "very quickly" }
+];
 
-  let currentQuestionIndex = 0;
-  let currentWords = []; 
-  let userSelection = []; 
+const sentenceData = [
+    { ja: "人々は毎日英語を話す機会をたくさん持つことができます。", en: "People can have many chances to speak English every day." },
+    { ja: "彼らは本物の英語を聞いて、発音を向上させることができます。", en: "They can listen to real English and improve their pronunciation." },
+    { ja: "生活するために英語を使わなければならないので、それは英語を学ぶ最速の方法です。", en: "It is the fastest way to learn English because they must use it to live." },
+    { ja: "英語を話す人に囲まれ、一日中その言語を使えるので、それは素晴らしい方法です。", en: "It is a great way because they can surround themselves with English speakers and use the language all day long." },
+    { ja: "正しい発音や、教科書では普通は見られない自然な表現を学ぶことができます。", en: "People can learn correct pronunciation and natural expressions that are not usually found in textbooks." },
+    { ja: "生活のために英語で意思疎通しなければならないので、彼らのコミュニケーションスキルは非常に早く向上します。", en: "They have to communicate in English to live, so their communication skills will improve very quickly." }
+];
 
-  const questionText = document.getElementById('questionText');
-  const answerArea = document.getElementById('answerArea');
-  const wordBank = document.getElementById('wordBank');
-  const resultMsg = document.getElementById('resultMsg');
-  const checkBtn = document.getElementById('checkBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const progressBar = document.getElementById('progressBar');
+let currentMode = 'vocab';
+let currentIdx = 0;
+let selectedWord = "";
+let userSentence = [];
+let isChecked = false;
+let tries = 3;
 
-  function initGame() {
-    currentQuestionIndex = 0;
+function switchMode(mode) {
+    currentMode = mode;
+    currentIdx = 0;
+    tries = 3;
+    document.getElementById('tab-vocab').classList.toggle('active', mode === 'vocab');
+    document.getElementById('tab-reorder').classList.toggle('active', mode === 'reorder');
     loadQuestion();
-    generatePrintSheet(); 
-  }
+}
 
-  function generatePrintSheet() {
-    const contentDiv = document.getElementById('sheet-content');
-    const answerDiv = document.getElementById('sheet-answers');
-    quizData.forEach((item, index) => {
-      const qBlock = document.createElement('div');
-      qBlock.className = 'sheet-question';
-      qBlock.innerHTML = `<div class="q-text">${item.ja}</div><div class="q-line"></div>`;
-      contentDiv.appendChild(qBlock);
+function speak(text) {
+    if (!document.getElementById('audioToggle').checked) return;
+    const uttr = new SpeechSynthesisUtterance(text);
+    uttr.lang = "en-US";
+    uttr.rate = 0.85;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(uttr);
+}
 
-      const aBlock = document.createElement('div');
-      aBlock.className = 'key-item';
-      aBlock.innerText = `${index + 1}. ${item.en}`;
-      answerDiv.appendChild(aBlock);
-    });
-  }
+function loadQuestion() {
+    isChecked = false;
+    tries = 3;
+    document.getElementById('resultMsg').textContent = "";
+    document.getElementById('tries-left').textContent = "";
+    const btn = document.getElementById('mainActionBtn');
+    btn.textContent = "Check Answer";
+    btn.disabled = true;
 
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
+    const area = document.getElementById('interactive-area');
+    area.innerHTML = "";
 
-  function loadQuestion() {
-    if (currentQuestionIndex >= quizData.length) {
-      finishGame();
-      return;
-    }
-
-    userSelection = [];
-    resultMsg.textContent = "";
-    resultMsg.className = "result-msg";
-    checkBtn.style.display = "inline-block";
-    nextBtn.style.display = "none";
-    
-    const progress = (currentQuestionIndex / quizData.length) * 100;
-    progressBar.style.width = progress + "%";
-
-    const q = quizData[currentQuestionIndex];
-    const displayJa = q.ja.replace(/^\d+\.\s/, "");
-    questionText.textContent = displayJa;
-
-    let cleanEn = q.en.replace(/([.,?])/g, " $1"); 
-    let words = cleanEn.split(/\s+/).filter(w => w.length > 0);
-
-    // ★重要: 単語バンク用に最初の単語を小文字にする（Iは除く）
-    if (words.length > 0 && words[0] !== "I") {
-      words[0] = words[0].charAt(0).toLowerCase() + words[0].slice(1);
-    }
-
-    currentWords = shuffle([...words]);
-
-    renderWordBank();
-    renderAnswerArea();
-  }
-
-  function renderWordBank() {
-    wordBank.innerHTML = "";
-    currentWords.forEach((word, index) => {
-      const btn = document.createElement('button');
-      btn.className = "word-btn";
-      btn.textContent = word;
-      if (userSelection.some(obj => obj.originalIndex === index)) {
-        btn.classList.add('used');
-      } else {
-        btn.onclick = () => selectWord(word, index);
-      }
-      wordBank.appendChild(btn);
-    });
-  }
-
-  function renderAnswerArea() {
-    answerArea.innerHTML = "";
-    if (userSelection.length === 0) {
-      answerArea.innerHTML = '<span style="color:#aaa; font-size:0.9rem; align-self:center;">単語をタップして並べてください</span>';
-      return;
-    }
-
-    userSelection.forEach((item, idx) => {
-      const btn = document.createElement('button');
-      btn.className = "answer-word";
-      
-      // ★重要: 回答欄の一番最初（idx===0）の単語だけ、表示を大文字にする
-      let displayText = item.text;
-      if (idx === 0) {
-        displayText = displayText.charAt(0).toUpperCase() + displayText.slice(1);
-      }
-
-      btn.textContent = displayText;
-      btn.onclick = () => removeWord(idx); 
-      answerArea.appendChild(btn);
-    });
-  }
-
-  function selectWord(word, originalIndex) {
-    userSelection.push({ text: word, originalIndex: originalIndex });
-    renderWordBank();
-    renderAnswerArea();
-  }
-
-  function removeWord(selectionIndex) {
-    userSelection.splice(selectionIndex, 1);
-    renderWordBank();
-    renderAnswerArea();
-  }
-
-  function checkAnswer() {
-    // ユーザーの並べた単語をつなげる
-    let userAnswerRaw = userSelection.map(obj => obj.text).join(" ");
-    
-    // ★重要: 正誤判定のために、ユーザーの答えの頭文字を大文字に変換する
-    if (userAnswerRaw.length > 0) {
-      userAnswerRaw = userAnswerRaw.charAt(0).toUpperCase() + userAnswerRaw.slice(1);
-    }
-
-    const formattedUserAnswer = userAnswerRaw.replace(/\s+([.,?])/g, "$1");
-    const correctAnswer = quizData[currentQuestionIndex].en;
-
-    if (formattedUserAnswer === correctAnswer) {
-      resultMsg.textContent = "Perfect! そのまま作文に使えます！";
-      resultMsg.classList.add("correct");
-      checkBtn.style.display = "none";
-      nextBtn.style.display = "inline-block";
+    if (currentMode === 'vocab') {
+        const item = vocabData[currentIdx];
+        document.getElementById('questionText').textContent = item.jp;
+        let choices = [item.en];
+        while(choices.length < 4) {
+            let r = vocabData[Math.floor(Math.random()*vocabData.length)].en;
+            if(!choices.includes(r)) choices.push(r);
+        }
+        choices.sort(() => Math.random() - 0.5);
+        
+        const grid = document.createElement('div');
+        grid.className = "choices-grid";
+        choices.forEach(c => {
+            const b = document.createElement('button');
+            b.className = "choice-btn";
+            b.textContent = c;
+            b.onclick = () => {
+                if(isChecked) return;
+                selectedWord = c;
+                document.querySelectorAll('.choice-btn').forEach(btn => btn.style.backgroundColor = "var(--soft-purple)");
+                b.style.backgroundColor = "#d1c4e9";
+                btn.disabled = false;
+                speak(c);
+            };
+            grid.appendChild(b);
+        });
+        area.appendChild(grid);
     } else {
-      resultMsg.textContent = "Try again! 語順を確認しましょう。";
-      resultMsg.classList.add("wrong");
+        const item = sentenceData[currentIdx];
+        document.getElementById('questionText').textContent = item.ja;
+        userSentence = [];
+        
+        const ansArea = document.createElement('div');
+        ansArea.className = "answer-area";
+        ansArea.id = "answerArea";
+        ansArea.ondragover = (e) => e.preventDefault();
+        ansArea.ondrop = drop;
+        area.appendChild(ansArea);
+
+        const bank = document.createElement('div');
+        bank.className = "word-bank";
+        bank.id = "wordBank";
+        
+        let words = item.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "");
+        words.sort(() => Math.random() - 0.5).forEach((w, idx) => {
+            const b = document.createElement('button');
+            b.className = "word-btn";
+            b.textContent = w;
+            b.id = "word-" + idx;
+            b.onclick = () => {
+                userSentence.push({text: w, btnId: b.id});
+                b.classList.add('used');
+                renderSentence();
+                btn.disabled = false;
+            };
+            bank.appendChild(b);
+        });
+        area.appendChild(bank);
+        renderSentence();
     }
-  }
+}
 
-  function nextQuestion() {
-    currentQuestionIndex++;
+function renderSentence() {
+    const area = document.getElementById('answerArea');
+    area.innerHTML = "";
+    userSentence.forEach((obj, i) => {
+        const s = document.createElement('div');
+        s.className = "answer-word";
+        s.textContent = obj.text;
+        s.draggable = true;
+        s.dataset.index = i;
+        s.ondragstart = (e) => e.dataTransfer.setData("text", e.target.dataset.index);
+        s.onclick = () => {
+            document.getElementById(obj.btnId).classList.remove('used');
+            userSentence.splice(i, 1);
+            renderSentence();
+        };
+        area.appendChild(s);
+    });
+}
+
+function drop(e) {
+    e.preventDefault();
+    const fromIdx = e.dataTransfer.getData("text");
+    const toIdx = e.target.dataset.index;
+    if (toIdx !== undefined) {
+        const movedItem = userSentence.splice(fromIdx, 1)[0];
+        userSentence.splice(toIdx, 0, movedItem);
+        renderSentence();
+    }
+}
+
+function handleMainAction() {
+    const btn = document.getElementById('mainActionBtn');
+    const resultMsg = document.getElementById('resultMsg');
+    const triesMsg = document.getElementById('tries-left');
+
+    if (!isChecked) {
+        let correctText = currentMode === 'vocab' ? vocabData[currentIdx].en : sentenceData[currentIdx].en;
+        let isCorrect = false;
+
+        if (currentMode === 'vocab') {
+            isCorrect = (selectedWord === correctText);
+        } else {
+            let userStr = userSentence.map(o => o.text).join(" ").replace(/\s+([.,])/g, "$1");
+            isCorrect = (userStr === correctText);
+        }
+
+        if (isCorrect) {
+            isChecked = true;
+            triesMsg.textContent = "";
+            speak(correctText);
+            const area = document.getElementById('interactive-area');
+            area.innerHTML = `<div class="final-sentence">${correctText}</div>`;
+            resultMsg.innerHTML = "Excellent! ✨";
+            btn.textContent = "Next →";
+        } else {
+            tries--;
+            speak("Try again");
+            if (tries > 0) {
+                resultMsg.innerHTML = "Not quite... Try again!";
+                triesMsg.textContent = `あと ${tries} 回チャレンジできます`;
+            } else {
+                isChecked = true;
+                triesMsg.textContent = "";
+                resultMsg.innerHTML = `Out of tries. Answer: ${correctText}`;
+                btn.textContent = "Next →";
+            }
+        }
+    } else {
+        currentIdx++;
+        const max = currentMode === 'vocab' ? vocabData.length : sentenceData.length;
+        if (currentIdx < max) loadQuestion();
+        else {
+            document.getElementById('quiz-ui').innerHTML = "<h3>Great Job! All steps completed.</h3>";
+            btn.style.display = "none";
+        }
+    }
+}
+
+function preparePrint() {
+    const vContent = document.getElementById('print-vocab-content');
+    vContent.innerHTML = vocabData.map((d, i) => `
+        <div class="print-vocab-q">
+            <span class="vocab-jp">${i+1}. ${d.jp}</span>
+            <div class="vocab-line"></div>
+        </div>
+    `).join('');
+
+    const sContent = document.getElementById('print-sentence-content');
+    sContent.innerHTML = sentenceData.map((d, i) => {
+        let words = d.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "").sort(() => Math.random() - 0.5);
+        return `
+            <div class="print-sentence-q">
+                <div class="sentence-ja">${i+1}. ${d.ja}</div>
+                <div class="sentence-choices">[ ${words.join(" / ")} ]</div>
+                <div class="sentence-line"></div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.onload = () => {
     loadQuestion();
-  }
-
-  function finishGame() {
-    questionText.textContent = "Excellent! ライティングの準備完了です！";
-    answerArea.innerHTML = "📝";
-    wordBank.innerHTML = "";
-    resultMsg.textContent = "お疲れ様でした！";
-    checkBtn.style.display = "none";
-    nextBtn.style.display = "none";
-    progressBar.style.width = "100%";
-  }
-
-  initGame();
+    preparePrint();
+};
 </script>
-
 </body>
 </html>
