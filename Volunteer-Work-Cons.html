@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eiken Pre-2nd: Volunteer Work (Cons / Negative)</title>
+<style>
+    :root {
+        --primary-purple: #4a148c;
+        --soft-purple: #f3e5f5;
+        --accent-yellow: #fff9c4;
+        --border-purple: #ce93d8;
+        --correct-green: #2e7d32;
+        --wrong-red: #c62828;
+        --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    body {
+        font-family: var(--base-font);
+        background-color: #faf7ff;
+        color: var(--primary-purple);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        margin: 0;
+    }
+
+    header { text-align: center; margin-bottom: 25px; width: 100%; max-width: 900px; }
+    h1 { font-size: 1.6rem; margin-bottom: 5px; color: var(--primary-purple); }
+    .sub-title { font-size: 0.9rem; color: #666; margin-bottom: 20px; font-weight: normal; }
+
+    .control-panel {
+        display: flex; align-items: center; justify-content: center; gap: 20px;
+        background: rgba(255,255,255,0.5); padding: 10px 20px; border-radius: 50px; display: inline-flex;
+    }
+
+    .settings { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: bold; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #9c27b0; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    .tabs { display: flex; gap: 8px; }
+    .tab-btn {
+        padding: 8px 18px; border-radius: 20px; border: 2px solid var(--primary-purple);
+        background: white; color: var(--primary-purple); cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.3s;
+    }
+    .tab-btn.active { background: var(--primary-purple); color: white; }
+
+    .container {
+        background: white; max-width: 900px; width: 100%; padding: 40px; border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;
+    }
+
+    .question-box {
+        font-size: 1.1rem; background-color: var(--accent-yellow); border-bottom: 4px solid #fbc02d;
+        padding: 30px 20px; border-radius: 20px; margin-bottom: 25px; text-align: center;
+        min-height: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .grammar-hint { font-size: 0.85rem; color: #d32f2f; margin-top: 5px; font-weight: bold; }
+
+    .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 700px; margin: 0 auto; }
+    .choice-btn, .word-btn {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 15px 20px; border-radius: 25px; cursor: pointer; font-size: 1.1rem; font-family: var(--base-font); font-weight: bold; transition: all 0.2s;
+    }
+    .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+    .word-btn.used { visibility: hidden; pointer-events: none; }
+
+    .answer-area {
+        min-height: 100px; border: 3px dashed var(--border-purple); border-radius: 20px; padding: 20px;
+        margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; background: #fff;
+    }
+
+    .answer-word {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 10px 18px; border-radius: 15px; cursor: grab; font-size: 1.1rem; font-weight: bold;
+    }
+
+    .final-sentence {
+        font-size: 1.6rem; color: var(--primary-purple); font-weight: bold; padding: 20px;
+        line-height: 1.8; text-align: left; max-width: 800px; margin: 0 auto;
+    }
+
+    .action-btn {
+        background: #fbc02d; color: var(--primary-purple); border: none; padding: 18px 50px;
+        border-radius: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #f9a825; margin-top: 15px;
+    }
+
+    /* --- Print Styles --- */
+    #print-area { display: none; }
+    @media print {
+        .container, header, .no-print { display: none !important; }
+        #print-area { display: block; color: black; background: white; width: 100%; font-family: var(--base-font); }
+        .print-page { page-break-after: always; padding: 5px 30px; }
+        .print-title { font-size: 1.2rem; text-align: center; border-bottom: 1px solid #000; margin-bottom: 15px; padding-bottom: 5px; }
+        .print-vocab-q { margin-bottom: 12px; font-size: 0.9rem; display: flex; align-items: flex-end; }
+        .vocab-jp { width: 50%; }
+        .vocab-line { flex-grow: 1; border-bottom: 1px solid #000; height: 35px; }
+        .print-sentence-q { margin-bottom: 30px; }
+        .sentence-ja { font-size: 0.9rem; margin-bottom: 2px; }
+        .sentence-hint { font-size: 0.8rem; color: #444; margin-bottom: 2px; }
+        .sentence-choices { font-style: italic; font-size: 0.85rem; margin-bottom: 8px; }
+        .sentence-line { border-bottom: 1px solid #000; height: 30px; margin-top: 0px; }
+    }
+</style>
+</head>
+<body>
+
+<header class="no-print">
+    <h1>英検準2級 Useful Expressions (Cons / Negative)</h1>
+    <div class="sub-title">Topic: Should students take part in volunteer work?</div>
+    
+    <div class="control-panel">
+        <div class="settings">
+            <span>Audio</span>
+            <label class="switch">
+                <input type="checkbox" id="audioToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-vocab" onclick="switchMode('vocab')">Vocabulary</button>
+            <button class="tab-btn" id="tab-reorder" onclick="switchMode('reorder')">Sentences</button>
+        </div>
+    </div>
+</header>
+
+<div class="container no-print">
+    <div id="quiz-ui">
+        <div class="question-box">
+            <div id="questionText">Loading...</div>
+            <div id="hintText" class="grammar-hint"></div>
+        </div>
+        <div id="interactive-area"></div>
+        <div id="resultMsg" style="margin: 20px 0; font-size: 1.2rem; font-weight: bold;"></div>
+        <button class="action-btn" id="mainActionBtn" onclick="handleMainAction()" disabled>Check Answer</button>
+    </div>
+    <button onclick="window.print()" style="margin-top:20px; background:none; border:none; text-decoration:underline; cursor:pointer; color:#777; font-size: 0.75rem;">Worksheet (A4 2枚) を印刷する</button>
+</div>
+
+<div id="print-area">
+    <div class="print-page">
+        <div class="print-title">Vocabulary: Volunteer Work (Cons / Negative)</div>
+        <div id="print-vocab-content"></div>
+    </div>
+    <div class="print-page">
+        <div class="print-title">Sentences: Volunteer Work (Cons / Negative)</div>
+        <div id="print-sentence-content"></div>
+    </div>
+</div>
+
+<script>
+const vocabData = [
+    { jp: "学業に集中する", en: "focus on schoolwork", dummy: ["focus on hobbies", "focus on cleaning", "focus on sleeping"] },
+    { jp: "～する時間がない", en: "have no time to", dummy: ["have a plan to", "have a chance to", "have a duty to"] },
+    { jp: "疲れ果てている", en: "exhausted", dummy: ["excited", "experienced", "excellent"] },
+    { jp: "部活動", en: "club activities", dummy: ["daily activities", "social activities", "outdoor activities"] },
+    { jp: "お金を稼ぐ", en: "earn money", dummy: ["spend money", "save money", "lose money"] },
+    { jp: "～の代わりに", en: "instead of", dummy: ["because of", "in spite of", "ahead of"] },
+    { jp: "お金の管理スキル", en: "money management skills", dummy: ["social skills", "cooking skills", "driving skills"] },
+    { jp: "アルバイトをする", en: "have a part-time job", dummy: ["have a full-time job", "have a volunteer job", "have a dream job"] },
+    { jp: "～を妨げる", en: "disturb", dummy: ["describe", "discuss", "discover"] },
+    { jp: "～しすぎる", en: "too much", dummy: ["as much", "so much", "very much"] },
+    { jp: "健康を害する", en: "harm their health", dummy: ["keep their health", "improve their health", "check their health"] },
+    { jp: "十分な休息", en: "enough rest", dummy: ["enough money", "enough food", "enough time"] }
+];
+
+const sentenceData = [
+    { ja: "学生はボランティア活動をするよりも学業に集中すべきです。", en: "Students should focus on schoolwork instead of doing volunteer work.", hint: "ヒント：should(〜すべき)と instead of(〜の代わりに)を使いましょう。" },
+    { ja: "多くの学生は部活動やテスト勉強でとても忙しいです。", en: "Many students are very busy with club activities and studying for tests.", hint: "ヒント：be busy with 〜（〜で忙しい）を使って表現しましょう。" },
+    { ja: "彼らは毎日疲れ果てているので、十分な休息が必要です。", en: "They are exhausted every day, so they need enough rest.", hint: "ヒント：so（なので）を使って2つの文をつなぎましょう。" },
+    { ja: "ボランティアをするくらいなら、アルバイトをしたほうがいいです。", en: "It is better to have a part-time job than to do volunteer work.", hint: "ヒント：It is better to A than to B（BよりAするほうが良い）を使いましょう。" },
+    { ja: "学生はアルバイトをすることでお金の管理を学ぶことができます。", en: "Students can learn money management by having a part-time job.", hint: "ヒント：by 〜ing（〜することによって）を使って手段を表しましょう。" },
+    { 
+    ja: "ボランティア活動は、学生の勉強を妨げるかもしれません。", 
+    en: "Volunteer work may disturb students' studies.", 
+    hint: "ヒント：disturb（〜を妨げる）の後に「学生の勉強（studies）」を続けてみましょう。" 
+},
+    { ja: "彼らは忙しすぎてボランティア活動に参加することができません。", en: "They are too busy to take part in volunteer work.", hint: "ヒント：too ... to 〜（あまりに...なので〜できない）の構文を使いましょう。" }
+];
+
+let currentMode = 'vocab';
+let currentIdx = 0;
+let selectedWord = "";
+let userSentence = [];
+let isChecked = false;
+
+function switchMode(mode) {
+    currentMode = mode;
+    currentIdx = 0;
+    document.getElementById('tab-vocab').classList.toggle('active', mode === 'vocab');
+    document.getElementById('tab-reorder').classList.toggle('active', mode === 'reorder');
+    loadQuestion();
+}
+
+function speak(text) {
+    if (!document.getElementById('audioToggle').checked) return;
+    const uttr = new SpeechSynthesisUtterance(text);
+    uttr.lang = "en-US";
+    uttr.rate = 0.8; 
+    const voices = window.speechSynthesis.getVoices();
+    const femaleVoice = voices.find(v => v.name.includes("Female") || v.name.includes("Google US English") || v.name.includes("Samantha"));
+    if (femaleVoice) uttr.voice = femaleVoice;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(uttr);
+}
+
+function loadQuestion() {
+    isChecked = false;
+    document.getElementById('resultMsg').textContent = "";
+    const btn = document.getElementById('mainActionBtn');
+    btn.textContent = "Check Answer";
+    btn.disabled = true;
+
+    const area = document.getElementById('interactive-area');
+    area.innerHTML = "";
+
+    if (currentMode === 'vocab') {
+        const item = vocabData[currentIdx];
+        document.getElementById('questionText').textContent = item.jp;
+        document.getElementById('hintText').textContent = "";
+        
+        let choices = [item.en, ...item.dummy].sort(() => Math.random() - 0.5);
+        const grid = document.createElement('div');
+        grid.className = "choices-grid";
+        choices.forEach(c => {
+            const b = document.createElement('button');
+            b.className = "choice-btn";
+            b.textContent = c;
+            b.onclick = () => {
+                if(isChecked) return;
+                selectedWord = c;
+                document.querySelectorAll('.choice-btn').forEach(btn => btn.style.backgroundColor = "var(--soft-purple)");
+                b.style.backgroundColor = "#d1c4e9";
+                btn.disabled = false;
+                speak(c);
+            };
+            grid.appendChild(b);
+        });
+        area.appendChild(grid);
+    } else {
+        const item = sentenceData[currentIdx];
+        document.getElementById('questionText').textContent = item.ja;
+        document.getElementById('hintText').textContent = item.hint;
+        userSentence = [];
+        
+        const ansArea = document.createElement('div');
+        ansArea.className = "answer-area";
+        ansArea.id = "answerArea";
+        ansArea.ondragover = (e) => e.preventDefault();
+        ansArea.ondrop = drop;
+        area.appendChild(ansArea);
+
+        const bank = document.createElement('div');
+        bank.className = "word-bank";
+        let words = item.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "").sort(() => Math.random() - 0.5);
+        words.forEach((w, idx) => {
+            const b = document.createElement('button');
+            b.className = "word-btn";
+            b.textContent = w;
+            b.id = "word-" + idx;
+            b.onclick = () => {
+                userSentence.push({text: w, btnId: b.id});
+                b.classList.add('used');
+                renderSentence();
+                btn.disabled = false;
+            };
+            bank.appendChild(b);
+        });
+        area.appendChild(bank);
+        renderSentence();
+    }
+}
+
+function renderSentence() {
+    const area = document.getElementById('answerArea');
+    area.innerHTML = "";
+    userSentence.forEach((obj, i) => {
+        const s = document.createElement('div');
+        s.className = "answer-word";
+        s.textContent = obj.text;
+        s.draggable = true;
+        s.dataset.index = i;
+        s.ondragstart = (e) => e.dataTransfer.setData("text", e.target.dataset.index);
+        s.onclick = () => {
+            document.getElementById(obj.btnId).classList.remove('used');
+            userSentence.splice(i, 1);
+            renderSentence();
+        };
+        area.appendChild(s);
+    });
+}
+
+function drop(e) {
+    e.preventDefault();
+    const fromIdx = e.dataTransfer.getData("text");
+    const toIdx = e.target.dataset.index;
+    if (toIdx !== undefined) {
+        const movedItem = userSentence.splice(fromIdx, 1)[0];
+        userSentence.splice(toIdx, 0, movedItem);
+        renderSentence();
+    }
+}
+
+function handleMainAction() {
+    const btn = document.getElementById('mainActionBtn');
+    const resultMsg = document.getElementById('resultMsg');
+    const correctText = currentMode === 'vocab' ? vocabData[currentIdx].en : sentenceData[currentIdx].en;
+
+    if (!isChecked) {
+        let isCorrect = false;
+        if (currentMode === 'vocab') {
+            isCorrect = (selectedWord === correctText);
+        } else {
+            let userStr = userSentence.map(o => o.text).join(" ").replace(/\s+([.,])/g, "$1");
+            isCorrect = (userStr === correctText);
+        }
+
+        if (isCorrect) {
+            isChecked = true;
+            speak(correctText);
+            const area = document.getElementById('interactive-area');
+            area.innerHTML = `<div class="final-sentence">${correctText}</div>`;
+            resultMsg.innerHTML = "Excellent! ✨";
+            btn.textContent = "Next →";
+        } else {
+            resultMsg.innerHTML = "Try again!";
+        }
+    } else {
+        currentIdx++;
+        const max = currentMode === 'vocab' ? vocabData.length : sentenceData.length;
+        if (currentIdx < max) loadQuestion();
+        else {
+            document.getElementById('quiz-ui').innerHTML = "<h3>Great Job! You've mastered these expressions.</h3>";
+            btn.style.display = "none";
+        }
+    }
+}
+
+function preparePrint() {
+    document.getElementById('print-vocab-content').innerHTML = vocabData.map((d, i) => `
+        <div class="print-vocab-q"><span class="vocab-jp">${i+1}. ${d.jp}</span><div class="vocab-line"></div></div>
+    `).join('');
+
+    document.getElementById('print-sentence-content').innerHTML = sentenceData.map((d, i) => {
+        let words = d.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "").sort(() => Math.random() - 0.5);
+        return `
+            <div class="print-sentence-q">
+                <div class="sentence-ja">${i+1}. ${d.ja}</div>
+                <div class="sentence-hint">${d.hint}</div>
+                <div class="sentence-choices">[ ${words.join(" / ")} ]</div>
+                <div class="sentence-line"></div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.onload = () => { loadQuestion(); preparePrint(); };
+window.speechSynthesis.onvoiceschanged = () => {};
+</script>
+</body>
+</html>
