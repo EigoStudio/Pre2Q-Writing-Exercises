@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eiken Pre-2nd: Early Morning Study (Cons / Negative) - Revised</title>
+<style>
+    :root {
+        --primary-purple: #4a148c;
+        --soft-purple: #f3e5f5;
+        --accent-yellow: #fff9c4;
+        --border-purple: #ce93d8;
+        --correct-green: #2e7d32;
+        --wrong-red: #c62828;
+        --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    body {
+        font-family: var(--base-font);
+        background-color: #faf7ff;
+        color: var(--primary-purple);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        margin: 0;
+    }
+
+    header { text-align: center; margin-bottom: 25px; width: 100%; max-width: 900px; }
+    h1 { font-size: 1.6rem; margin-bottom: 5px; color: var(--primary-purple); }
+    .sub-title { font-size: 0.9rem; color: #666; margin-bottom: 20px; font-weight: normal; }
+
+    .control-panel {
+        display: flex; align-items: center; justify-content: center; gap: 20px;
+        background: rgba(255,255,255,0.5); padding: 10px 20px; border-radius: 50px; display: inline-flex;
+    }
+
+    .settings { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: bold; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #9c27b0; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    .tabs { display: flex; gap: 8px; }
+    .tab-btn {
+        padding: 8px 18px; border-radius: 20px; border: 2px solid var(--primary-purple);
+        background: white; color: var(--primary-purple); cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.3s;
+    }
+    .tab-btn.active { background: var(--primary-purple); color: white; }
+
+    .container {
+        background: white; max-width: 900px; width: 100%; padding: 40px; border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;
+    }
+
+    .question-box {
+        font-size: 1.1rem; background-color: var(--accent-yellow); border-bottom: 4px solid #fbc02d;
+        padding: 30px 20px; border-radius: 20px; margin-bottom: 25px; text-align: center;
+        min-height: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .grammar-hint { font-size: 0.85rem; color: #d32f2f; margin-top: 5px; font-weight: bold; }
+
+    .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 700px; margin: 0 auto; }
+    .choice-btn, .word-btn {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 15px 20px; border-radius: 25px; cursor: pointer; font-size: 1.1rem; font-family: var(--base-font); font-weight: bold; transition: all 0.2s;
+    }
+    .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+    .word-btn.used { visibility: hidden; pointer-events: none; }
+
+    .answer-area {
+        min-height: 100px; border: 3px dashed var(--border-purple); border-radius: 20px; padding: 20px;
+        margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; background: #fff;
+    }
+
+    .answer-word {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 10px 18px; border-radius: 15px; cursor: grab; font-size: 1.1rem; font-weight: bold;
+    }
+
+    .final-sentence {
+        font-size: 1.6rem; color: var(--primary-purple); font-weight: bold; padding: 20px;
+        line-height: 1.8; text-align: left; max-width: 800px; margin: 0 auto;
+    }
+
+    .action-btn {
+        background: #fbc02d; color: var(--primary-purple); border: none; padding: 18px 50px;
+        border-radius: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #f9a825; margin-top: 15px;
+    }
+
+    /* --- Print Styles --- */
+    #print-area { display: none; }
+    @media print {
+        .container, header, .no-print { display: none !important; }
+        #print-area { display: block; color: black; background: white; width: 100%; font-family: var(--base-font); }
+        .print-page { page-break-after: always; padding: 5px 30px; }
+        .print-title { font-size: 1.2rem; text-align: center; border-bottom: 1px solid #000; margin-bottom: 15px; padding-bottom: 5px; }
+        .print-vocab-q { margin-bottom: 12px; font-size: 0.9rem; display: flex; align-items: flex-end; }
+        .vocab-jp { width: 50%; }
+        .vocab-line { flex-grow: 1; border-bottom: 1px solid #000; height: 35px; }
+        .print-sentence-q { margin-bottom: 30px; }
+        .sentence-ja { font-size: 0.9rem; margin-bottom: 2px; }
+        .sentence-hint { font-size: 0.8rem; color: #444; margin-bottom: 2px; }
+        .sentence-choices { font-style: italic; font-size: 0.85rem; margin-bottom: 8px; }
+        .sentence-line { border-bottom: 1px solid #000; height: 30px; margin-top: 0px; }
+    }
+</style>
+</head>
+<body>
+
+<header class="no-print">
+    <h1>英検準2級 Useful Expressions (Cons / Negative)</h1>
+    <div class="sub-title">Topic: Do you think it is a good idea for students to get up early to study in the morning?</div>
+    
+    <div class="control-panel">
+        <div class="settings">
+            <span>Audio</span>
+            <label class="switch">
+                <input type="checkbox" id="audioToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-vocab" onclick="switchMode('vocab')">Vocabulary</button>
+            <button class="tab-btn" id="tab-reorder" onclick="switchMode('reorder')">Sentences</button>
+        </div>
+    </div>
+</header>
+
+<div class="container no-print">
+    <div id="quiz-ui">
+        <div class="question-box">
+            <div id="questionText">Loading...</div>
+            <div id="hintText" class="grammar-hint"></div>
+        </div>
+        <div id="interactive-area"></div>
+        <div id="resultMsg" style="margin: 20px 0; font-size: 1.2rem; font-weight: bold;"></div>
+        <button class="action-btn" id="mainActionBtn" onclick="handleMainAction()" disabled>Check Answer</button>
+    </div>
+    <button onclick="window.print()" style="margin-top:20px; background:none; border:none; text-decoration:underline; cursor:pointer; color:#777; font-size: 0.75rem;">Worksheet (A4 2枚) を印刷する</button>
+</div>
+
+<div id="print-area">
+    <div class="print-page">
+        <div class="print-title">Vocabulary: Early Morning Study (Cons / Negative)</div>
+        <div id="print-vocab-content"></div>
+    </div>
+    <div class="print-page">
+        <div class="print-title">Sentences: Early Morning Study (Cons / Negative)</div>
+        <div id="print-sentence-content"></div>
+    </div>
+</div>
+
+<script>
+// 修正済みの語彙データ
+const vocabData = [
+    { jp: "睡眠不足", en: "lack of sleep", dummy: ["lots of sleep", "deep sleep", "dreaming sleep"] },
+    { jp: "～を眠くさせる", en: "make someone sleepy", dummy: ["make someone happy", "make someone angry", "make someone busy"] },
+    { jp: "授業中に", en: "during class", dummy: ["before class", "after class", "without class"] },
+    { jp: "夜ふかしする", en: "stay up late", dummy: ["get up early", "wake up now", "sleep well"] },
+    { jp: "十分な時間がない", en: "don't have enough time", dummy: ["have much time", "have no money", "haven't a car"] },
+    { jp: "～するのが難しい", en: "find it difficult to", dummy: ["find it easy to", "find it fun to", "find it quick to"] },
+    { jp: "～に悪い影響を与える", en: "have a bad effect on", dummy: ["have a good idea on", "have a plan for", "have a dream about"] },
+    { jp: "体調（健康状態）", en: "physical condition", dummy: ["mental condition", "social condition", "weather condition"] },
+    { jp: "集中力を失う", en: "lose concentration", dummy: ["keep concentration", "get concentration", "start concentration"] },
+    { jp: "眠気を感じる", en: "feel drowsy", dummy: ["feel hungry", "feel thirsty", "feel lonely"] },
+    { jp: "夜型の人", en: "night owl", dummy: ["early bird", "angry bird", "city boy"] },
+    { jp: "～する代わりに", en: "instead of", dummy: ["because of", "in front of", "next to"] }
+];
+
+// 修正済みの文章データ
+const sentenceData = [
+    { ja: "学生にとって、朝早く起きることは難しいと思います。", en: "I think it is difficult for students to get up early.", hint: "ヒント：It is (形容詞) for (人) to 〜 の構文を使います。" },
+    { ja: "早起きをすることは、睡眠不足の原因になるかもしれません。", en: "Getting up early may cause lack of sleep.", hint: "ヒント：cause（〜の原因になる）を使いましょう。" },
+    { ja: "彼らは授業中に眠気を感じるかもしれません。", en: "They might feel sleepy during class.", hint: "ヒント：might（〜かもしれない）を使って可能性を表します。" },
+    { ja: "これは、彼らの学業成績に悪い影響を与える可能性があります。", en: "This could have a bad effect on their academic performance.", hint: "ヒント：have a bad effect on 〜（〜に悪い影響を与える）を使います。" },
+    { ja: "多くの学生は、夜に勉強する方を好みます。", en: "Many students prefer to study at night.", hint: "ヒント：prefer to 〜（〜する方を好む）を使いましょう。" },
+    { ja: "彼らは夜の方がよりよく集中できます。", en: "They can concentrate better at night.", hint: "ヒント：concentrate better（よりよく集中できる）を使って表現します。" },
+    { ja: "健康を維持するためには、十分な睡眠をとることが重要です。", en: "It is important to get enough sleep to stay healthy.", hint: "ヒント：to stay healthy（健康を維持するために）を文末に付けます。" }
+];
+
+let currentMode = 'vocab';
+let currentIdx = 0;
+let selectedWord = "";
+let userSentence = [];
+let isChecked = false;
+
+function switchMode(mode) {
+    currentMode = mode;
+    currentIdx = 0;
+    document.getElementById('tab-vocab').classList.toggle('active', mode === 'vocab');
+    document.getElementById('tab-reorder').classList.toggle('active', mode === 'reorder');
+    loadQuestion();
+}
+
+function speak(text) {
+    if (!document.getElementById('audioToggle').checked) return;
+    const uttr = new SpeechSynthesisUtterance(text);
+    uttr.lang = "en-US";
+    uttr.rate = 0.8; 
+    const voices = window.speechSynthesis.getVoices();
+    const femaleVoice = voices.find(v => v.name.includes("Female") || v.name.includes("Google US English") || v.name.includes("Samantha"));
+    if (femaleVoice) uttr.voice = femaleVoice;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(uttr);
+}
+
+function loadQuestion() {
+    isChecked = false;
+    document.getElementById('resultMsg').textContent = "";
+    const btn = document.getElementById('mainActionBtn');
+    btn.textContent = "Check Answer";
+    btn.disabled = true;
+
+    const area = document.getElementById('interactive-area');
+    area.innerHTML = "";
+
+    if (currentMode === 'vocab') {
+        const item = vocabData[currentIdx];
+        document.getElementById('questionText').textContent = item.jp;
+        document.getElementById('hintText').textContent = "";
+        
+        let choices = [item.en, ...item.dummy].sort(() => Math.random() - 0.5);
+        const grid = document.createElement('div');
+        grid.className = "choices-grid";
+        choices.forEach(c => {
+            const b = document.createElement('button');
+            b.className = "choice-btn";
+            b.textContent = c;
+            b.onclick = () => {
+                if(isChecked) return;
+                selectedWord = c;
+                document.querySelectorAll('.choice-btn').forEach(btn => btn.style.backgroundColor = "var(--soft-purple)");
+                b.style.backgroundColor = "#d1c4e9";
+                btn.disabled = false;
+                speak(c);
+            };
+            grid.appendChild(b);
+        });
+        area.appendChild(grid);
+    } else {
+        const item = sentenceData[currentIdx];
+        document.getElementById('questionText').textContent = item.ja;
+        document.getElementById('hintText').textContent = item.hint;
+        userSentence = [];
+        
+        const ansArea = document.createElement('div');
+        ansArea.className = "answer-area";
+        ansArea.id = "answerArea";
+        ansArea.ondragover = (e) => e.preventDefault();
+        ansArea.ondrop = drop;
+        area.appendChild(ansArea);
+
+        const bank = document.createElement('div');
+        bank.className = "word-bank";
+        let words = item.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "").sort(() => Math.random() - 0.5);
+        words.forEach((w, idx) => {
+            const b = document.createElement('button');
+            b.className = "word-btn";
+            b.textContent = w;
+            b.id = "word-" + idx;
+            b.onclick = () => {
+                userSentence.push({text: w, btnId: b.id});
+                b.classList.add('used');
+                renderSentence();
+                btn.disabled = false;
+            };
+            bank.appendChild(b);
+        });
+        area.appendChild(bank);
+        renderSentence();
+    }
+}
+
+function renderSentence() {
+    const area = document.getElementById('answerArea');
+    area.innerHTML = "";
+    userSentence.forEach((obj, i) => {
+        const s = document.createElement('div');
+        s.className = "answer-word";
+        s.textContent = obj.text;
+        s.draggable = true;
+        s.dataset.index = i;
+        s.ondragstart = (e) => e.dataTransfer.setData("text", e.target.dataset.index);
+        s.onclick = () => {
+            document.getElementById(obj.btnId).classList.remove('used');
+            userSentence.splice(i, 1);
+            renderSentence();
+        };
+        area.appendChild(s);
+    });
+}
+
+function drop(e) {
+    e.preventDefault();
+    const fromIdx = e.dataTransfer.getData("text");
+    const toIdx = e.target.dataset.index;
+    if (toIdx !== undefined) {
+        const movedItem = userSentence.splice(fromIdx, 1)[0];
+        userSentence.splice(toIdx, 0, movedItem);
+        renderSentence();
+    }
+}
+
+function handleMainAction() {
+    const btn = document.getElementById('mainActionBtn');
+    const resultMsg = document.getElementById('resultMsg');
+    const correctText = currentMode === 'vocab' ? vocabData[currentIdx].en : sentenceData[currentIdx].en;
+
+    if (!isChecked) {
+        let isCorrect = false;
+        if (currentMode === 'vocab') {
+            isCorrect = (selectedWord === correctText);
+        } else {
+            let userStr = userSentence.map(o => o.text).join(" ").replace(/\s+([.,])/g, "$1");
+            isCorrect = (userStr === correctText);
+        }
+
+        if (isCorrect) {
+            isChecked = true;
+            speak(correctText);
+            const area = document.getElementById('interactive-area');
+            area.innerHTML = `<div class="final-sentence">${correctText}</div>`;
+            resultMsg.innerHTML = "Excellent! ✨";
+            btn.textContent = "Next →";
+        } else {
+            resultMsg.innerHTML = "Try again!";
+        }
+    } else {
+        currentIdx++;
+        const max = currentMode === 'vocab' ? vocabData.length : sentenceData.length;
+        if (currentIdx < max) loadQuestion();
+        else {
+            document.getElementById('quiz-ui').innerHTML = "<h3>Good Work. Now you can express both sides!</h3>";
+            btn.style.display = "none";
+        }
+    }
+}
+
+function preparePrint() {
+    document.getElementById('print-vocab-content').innerHTML = vocabData.map((d, i) => `
+        <div class="print-vocab-q"><span class="vocab-jp">${i+1}. ${d.jp}</span><div class="vocab-line"></div></div>
+    `).join('');
+
+    document.getElementById('print-sentence-content').innerHTML = sentenceData.map((d, i) => {
+        let words = d.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "").sort(() => Math.random() - 0.5);
+        return `
+            <div class="print-sentence-q">
+                <div class="sentence-ja">${i+1}. ${d.ja}</div>
+                <div class="sentence-hint">${d.hint}</div>
+                <div class="sentence-choices">[ ${words.join(" / ")} ]</div>
+                <div class="sentence-line"></div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.onload = () => { loadQuestion(); preparePrint(); };
+window.speechSynthesis.onvoiceschanged = () => {};
+</script>
+</body>
+</html>
