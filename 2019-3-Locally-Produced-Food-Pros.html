@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Eiken 2nd Writing Worksheet</title>
+<style>
+    :root {
+        --bg-pros: #f0f9f4;
+        --accent-green: #68b0ab;
+        --deep-green: #2d6a4f;
+        --text-dark: #1b4332;
+        --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    /* --- Screen Styles --- */
+    body { font-family: var(--base-font); background-color: var(--bg-pros); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; touch-action: manipulation; }
+    header, .container { max-width: 900px; width: 100%; }
+    
+    .header-top { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--accent-green); padding-bottom: 5px; margin: 10px 0; }
+    h1 { font-size: 1.4rem; color: var(--deep-green); margin: 0; }
+    .topic-name-header { font-size: 1rem; font-weight: bold; color: var(--deep-green); }
+
+    .topic-box { background: white; padding: 15px; border-radius: 12px; border-left: 5px solid var(--accent-green); margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-size: 0.9rem; line-height: 1.5; text-align: left; }
+    
+    .control-panel { display: flex; justify-content: center; gap: 15px; background: white; padding: 10px; border-radius: 50px; border: 1.5px solid var(--accent-green); margin-bottom: 15px; }
+    .tab-btn { padding: 6px 20px; border-radius: 20px; border: 1.5px solid var(--accent-green); background: transparent; color: var(--deep-green); cursor: pointer; font-weight: bold; font-family: var(--base-font); font-size: 0.9rem; }
+    .tab-btn.active { background: var(--accent-green); color: white; }
+    
+    .container { background: rgba(255, 255, 255, 0.8); padding: 20px 15px; border-radius: 20px; text-align: center; }
+    .question-box { background: white; border-bottom: 3px solid var(--accent-green); padding: 15px; border-radius: 12px; margin-bottom: 10px; min-height: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 1rem; }
+    .ans-feedback-text { font-size: 1.4rem; color: var(--deep-green); font-weight: bold; margin-bottom: 10px; min-height: 1.5rem; }
+
+    .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .choice-btn, .word-btn { background: white; color: var(--deep-green); border: 1.5px solid var(--accent-green); padding: 12px 8px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; font-family: var(--base-font); }
+    
+    .answer-area { min-height: 60px; border: 2px dashed var(--accent-green); border-radius: 12px; padding: 10px; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center; position: relative; }
+    .answer-word { background: var(--deep-green); color: white; padding: 5px 12px; border-radius: 8px; cursor: grab; font-size: 1.1rem; user-select: none; position: relative; z-index: 10; }
+    .answer-word.dragging { opacity: 0.5; }
+    .answer-word.popped { background: transparent !important; color: var(--text-dark) !important; border: none !important; font-size: 1.2rem !important; cursor: default !important; padding: 0 3px 0 0 !important; margin: 0 !important; display: inline !important; }
+    .final-sentence-plain { font-size: 1.3rem; color: var(--text-dark); text-align: left; width: 100%; line-height: 1.5; }
+
+    .word-btn.used { visibility: hidden; }
+    .action-btn { background: var(--deep-green); color: white; border: none; padding: 12px 40px; border-radius: 40px; font-weight: bold; cursor: pointer; font-family: var(--base-font); font-size: 1rem; }
+
+    /* --- Print Styles --- */
+    #print-area { display: none; }
+    @media print {
+        body { background: white !important; padding: 0 !important; }
+        .no-print, header, .container, .control-panel { display: none !important; }
+        #print-area { display: block !important; width: 100% !important; color: black !important; font-family: var(--base-font); }
+        .print-page { page-break-after: always; padding: 5mm; display: block !important; }
+        .print-header { border-bottom: 0px solid #000; margin-bottom: 5px; font-size: 1.1rem; font-weight: bold; }
+        .print-topic-sm { font-size: 0.85rem; padding: 5px 0; margin-bottom: 10px; line-height: 1.5; border: none !important; }
+        .print-sec-head { font-size: 1rem; font-weight: bold; margin: 12px 0 5px; border-bottom: 1px solid #000; display: inline-block; }
+        .print-item { margin-bottom: 25px; }
+        .print-q-text { font-weight: normal; font-size: 0.85rem; margin-bottom: 2px; display: block; }
+        .word-choices-box { font-style: italic; font-size: 0.75rem; display: block; margin-bottom: 0px; }
+        .print-line-full { border-bottom: 0.5px solid #000; height: 2rem; width: 100%; }
+        .vocab-list-column { display: block; }
+        .vocab-row { display: flex; align-items: flex-end; margin-bottom: 10px; width: 100%; line-height: 1.3; } /* line-heightを2に設定 */
+        .vocab-jp { min-width: 200px; font-size: 0.9rem; }
+        .vocab-line { border-bottom: 0.5px solid #000; flex-grow: 1; height:2.2rem; }
+    }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+    <header>
+        <div class="header-top">
+            <h1>英検2級 英作文対策 Pros 肯定</h1>
+            <div class="topic-name-header">Buy Locally Produced Food</div>
+        </div>
+        <div class="topic-box">
+            <strong>TOPIC:</strong> Some people prefer to buy food produced in their local area. Do you think more people will buy locally produced food in the future?<br>
+            <strong>POINTS:</strong> Local economies / Safety / The environment
+        </div>
+        <div class="control-panel">
+            <button class="tab-btn active" id="tab-vocab" onclick="switchMode('vocab')">Vocab</button>
+            <button class="tab-btn" id="tab-reorder" onclick="switchMode('reorder')">Sentences</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="questionText" class="question-box"></div>
+        <div id="ansFeedback" class="ans-feedback-text"></div>
+        <div id="interactive-area"></div>
+        <div id="resultMsg" style="margin: 10px; font-size: 1.2rem; font-weight: bold; color: var(--deep-green);"></div>
+        <button class="action-btn" id="mainActionBtn" onclick="handleMainAction()" disabled>Check Answer</button>
+        <br>
+        <button onclick="window.print()" style="margin-top:20px; background:none; border:none; text-decoration:underline; cursor:pointer; color:var(--deep-green); font-size: 0.8rem;">
+            ワークシートを印刷する
+        </button>
+    </div>
+</div>
+
+<div id="print-area">
+    <div class="print-page">
+        <div class="print-header">Buy Locally Produced Food (Pros)</div>
+        <div class="print-topic-sm">
+            <b>Topic:</b> Some people prefer to buy food produced in their local area. Do you think more people will buy locally produced food in the future? <br>
+            <b>Points:</b> Local economies / Safety / The environment
+        </div>
+        
+        <div class="print-sec-head">Section 1: Useful Expressions</div>
+        <div id="print-vocab-list" class="vocab-list-column"></div>
+
+        <div class="print-sec-head">Section 2: Sentence Structure</div>
+        <div id="print-sentence-list"></div>
+    </div>
+</div>
+
+<script>
+const vocabData = [
+    { jp: "化石燃料を消費する", en: "consume fossil fuels" },
+    { jp: "二酸化炭素排出量", en: "carbon footprint" },
+    { jp: "～を思いとどまらせる", en: "discourage from buying" },
+    { jp: "遠く離れた場所から", en: "from distant locations" },
+    { jp: "長距離輸送", en: "long-distance transportation" },
+    { jp: "地元農家を支援する", en: "support local farmers" },
+    { jp: "地元経済を活性化する", en: "strengthen local economies" },
+    { jp: "農薬の使用を減らす", en: "reduce the use of pesticides" },
+    { jp: "新鮮さと品質", en: "freshness and quality" },
+    { jp: "～を好む (A to B)", en: "prefer A to B" },
+    { jp: "環境への悪影響", en: "negative impact on the environment" },
+    { jp: "輸送コストを削減する", en: "reduce transportation costs" },
+    { jp: "小規模ビジネスを助ける", en: "help small businesses" },
+    { jp: "持続可能な社会", en: "sustainable society" },
+    { jp: "温室効果ガス", en: "greenhouse gases" },
+    { jp: "食の安全", en: "food safety" },
+    { jp: "健康に不可欠な", en: "essential for health" },
+    { jp: "将来の世代のために", en: "for future generations" },
+    { jp: "～を保護する", en: "preserve" },
+    { jp: "～する傾向がある", en: "tend to do" }
+];
+
+const sentenceData = [
+    { ja: "食品を長距離輸送することは多くの燃料を消費します。", en: "Transporting food over long distances consumes a lot of fuel .", parts: ["Transporting", "food", "over", "long", "distances", "consumes", "a", "lot", "of", "fuel", "."] },
+    { ja: "人々はカーボンフットプリントの高い食品を買うのを避けるようになるでしょう。", en: "People will be discouraged from buying food with a high carbon footprint .", parts: ["People", "will", "be", "discouraged", "from", "buying", "food", "with", "a", "high", "carbon", "footprint", "."] },
+    { ja: "その結果、輸入食品をたまにしか買わなくなる可能性があります。", en: "As a result , they are likely to buy imported food only occasionally .", parts: ["As", "a", "result", ",", "they", "are", "likely", "to", "buy", "imported", "food", "only", "occasionally", "."] },
+    { ja: "地元農家を支援することは、地域経済を強くすることに繋がります。", en: "Supporting local farmers leads to making local economies stronger .", parts: ["Supporting", "local", "farmers", "leads", "to", "making", "local", "economies", "stronger", "."] },
+    { ja: "多くの人は、地元産の野菜が輸入されたものより安全だと信じています。", en: "Many people believe that local vegetables are safer than imported ones .", parts: ["Many", "people", "believe", "that", "local", "vegetables", "are", "safer", "than", "imported", "ones", "."] },
+    { ja: "地元の製品を選ぶことで、小規模なビジネスを助けることができます。", en: "By choosing local products , we can help small businesses in our area .", parts: ["By", "choosing", "local", "products", ",", "we", "can", "help", "small", "businesses", "in", "our", "area", "."] },
+    { ja: "地産地消は、環境にプラスの効果をもたらします。", en: "Buying locally produced food has positive effects on the environment .", parts: ["Buying", "locally", "produced", "food", "has", "positive", "effects", "on", "the", "environment", "."] },
+    { ja: "したがって、将来はこのトレンドがさらに強まると考えられます。", en: "Therefore , I believe that this trend will become stronger in the future .", parts: ["Therefore", ",", "I", "believe", "that", "this", "trend", "will", "become", "stronger", "in", "the", "future", "."] },
+    { ja: "農薬の少ない新鮮な食べ物は、健康に不可欠です。", en: "Fresh food with less pesticide is essential for our health .", parts: ["Fresh", "food", "with", "less", "pesticide", "is", "essential", "for", "our", "health", "."] },
+    { ja: "私たちは輸送コストとCO2排出を削減すべきです。", en: "We should reduce transportation costs and CO2 emissions .", parts: ["We", "should", "reduce", "transportation", "costs", "and", "CO2", "emissions", "."] }
+];
+
+const praises = ["Great!", "Excellent!", "Perfect!", "Amazing!", "Good job!"];
+let currentMode = 'vocab', currentIdx = 0, isChecking = false;
+
+function switchMode(mode) {
+    currentMode = mode; currentIdx = 0;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + mode).classList.add('active');
+    loadQuestion();
+}
+
+function loadQuestion() {
+    isChecking = false; 
+    document.getElementById('resultMsg').textContent = "";
+    document.getElementById('ansFeedback').textContent = "";
+    const btn = document.getElementById('mainActionBtn'); btn.textContent = "Check Answer"; btn.disabled = true;
+    const area = document.getElementById('interactive-area'); area.innerHTML = "";
+
+    if (currentMode === 'vocab') {
+        const item = vocabData[currentIdx]; document.getElementById('questionText').textContent = item.jp;
+        const grid = document.createElement('div'); grid.className = "choices-grid";
+        [item.en, "waste resources", "ignore rules", "wrong timing"].sort(() => Math.random() - 0.5).forEach(c => {
+            const b = document.createElement('button'); b.className = "choice-btn"; b.textContent = c;
+            b.onclick = () => { 
+                if(!isChecking) {
+                    if (c === item.en) {
+                        isChecking = true;
+                        grid.innerHTML = "";
+                        document.getElementById('ansFeedback').textContent = c;
+                        document.getElementById('resultMsg').style.color = "var(--deep-green)";
+                        document.getElementById('resultMsg').textContent = praises[Math.floor(Math.random()*praises.length)];
+                        btn.textContent = "Next →"; btn.disabled = false;
+                    } else {
+                        document.getElementById('resultMsg').style.color = "#888";
+                        document.getElementById('resultMsg').textContent = "Keep trying!";
+                    }
+                }
+            };
+            grid.appendChild(b);
+        });
+        area.appendChild(grid);
+    } else {
+        const item = sentenceData[currentIdx]; document.getElementById('questionText').textContent = item.ja;
+        const ansArea = document.createElement('div'); ansArea.className = "answer-area"; ansArea.id = "answerArea";
+        
+        ansArea.addEventListener('dragover', e => {
+            if (isChecking) return;
+            e.preventDefault();
+            const dragging = document.querySelector('.dragging');
+            const afterElement = getDragAfterElement(ansArea, e.clientX);
+            if (afterElement == null) ansArea.appendChild(dragging);
+            else ansArea.insertBefore(dragging, afterElement);
+        });
+
+        area.appendChild(ansArea);
+        const bank = document.createElement('div'); bank.style.display = "flex"; bank.style.flexWrap = "wrap"; bank.style.gap = "8px"; bank.style.justifyContent = "center";
+        [...item.parts].sort(() => Math.random() - 0.5).forEach((w, i) => {
+            const b = document.createElement('button'); b.className = "word-btn"; b.textContent = w; b.id = "w"+i;
+            b.onclick = () => { if(!isChecking){ addWordToAnswer(w, b.id); b.classList.add('used'); btn.disabled=false; } };
+            bank.appendChild(b);
+        });
+        area.appendChild(bank);
+    }
+}
+
+function addWordToAnswer(text, id) {
+    const area = document.getElementById('answerArea');
+    const s = document.createElement('div');
+    s.className = "answer-word"; s.textContent = text; s.draggable = true;
+    s.onclick = () => { if (isChecking) return; document.getElementById(id).classList.remove('used'); s.remove(); if (area.children.length === 0) document.getElementById('mainActionBtn').disabled = true; };
+    
+    s.addEventListener('dragstart', () => { if (!isChecking) s.classList.add('dragging'); });
+    s.addEventListener('dragend', () => { s.classList.remove('dragging'); });
+    
+    area.appendChild(s);
+}
+
+function getDragAfterElement(container, x) {
+    const draggableElements = [...container.querySelectorAll('.answer-word:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = x - box.left - box.width / 2;
+        if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
+        else return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function handleMainAction() {
+    const btn = document.getElementById('mainActionBtn');
+    if (!isChecking && currentMode === 'reorder') {
+        const userWords = Array.from(document.querySelectorAll('.answer-word')).map(el => el.textContent);
+        const userSent = userWords.join(" ");
+        const target = sentenceData[currentIdx].en.replace(/\s+([,.])/g, '$1');
+        const userClean = userSent.replace(/\s+([,.])/g, '$1');
+        
+        if (userClean === target) {
+            isChecking = true;
+            const area = document.getElementById('answerArea');
+            area.innerHTML = `<div class="final-sentence-plain">${target}</div>`;
+            area.style.border = "none";
+            document.getElementById('resultMsg').style.color = "var(--deep-green)";
+            document.getElementById('resultMsg').textContent = praises[Math.floor(Math.random()*praises.length)];
+            btn.textContent = "Next →";
+        } else {
+            const targetWords = sentenceData[currentIdx].parts;
+            const isWordOrderWrong = userWords.some((w, i) => w.match(/[a-zA-Z]/) && w !== targetWords.filter(tw => tw.match(/[a-zA-Z]/))[i]);
+            
+            document.getElementById('resultMsg').style.color = "#888";
+            if (isWordOrderWrong || userWords.length !== targetWords.length) {
+                document.getElementById('resultMsg').textContent = "Check the word order!";
+            } else {
+                document.getElementById('resultMsg').textContent = "Check the punctuation!";
+            }
+        }
+    } else {
+        const total = (currentMode === 'vocab' ? vocabData.length : sentenceData.length);
+        if(currentIdx < total - 1) { currentIdx++; loadQuestion(); } else { alert("Level Clear!"); }
+    }
+}
+
+function setupPrintContent() {
+    document.getElementById('print-vocab-list').innerHTML = vocabData.map((d, i) => `<div class="vocab-row"><span class="vocab-jp">${i+1}. ${d.jp}</span><div class="vocab-line"></div></div>`).join('');
+    document.getElementById('print-sentence-list').innerHTML = sentenceData.map((d, i) => `<div class="print-item"><span class="print-q-text">${i+1}. ${d.ja}</span><span class="word-choices-box">( ${[...d.parts].sort(() => Math.random() - 0.5).join(" / ")} )</span><div class="print-line-full"></div></div>`).join('');
+}
+
+window.onload = () => { loadQuestion(); setupPrintContent(); };
+</script>
+</body>
+</html>
