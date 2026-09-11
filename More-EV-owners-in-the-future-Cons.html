@@ -252,16 +252,16 @@
 
 <script>
 const videoQuestions = [
-    { q: "1. What is one major issue regarding charging stations compared to traditional gas stations?", choices: ["A) There are fewer charging stations than gas stations.", "B) Charging stations are free everywhere.", "C) Charging stations are faster than gas pumps.", "D) Gasoline is sold at charging stations."], ans: "A) There are fewer charging stations than gas stations.", explanation: "The video points out that public charging infrastructure is far less common than traditional gas stations." },
-    { q: "2. What additional problem exists with public EV charging stations when drivers reach them?", choices: ["A) They only accept cash.", "B) Many of them are out of order or broken.", "C) They are illegal in big cities.", "D) They require special licenses."], ans: "B) Many of them are out of order or broken.", explanation: "Many charging stations are broken or unresponsive, leaving drivers stranded." },
+    { q: "1. What is one major issue regarding charging stations compared to traditional gas stations?", choices: ["A) Gasoline is sold at charging stations.", "B) There are fewer charging stations than gas stations.", "C) Charging stations are free everywhere.", "D) Charging stations are faster than gas pumps."], ans: "B) There are fewer charging stations than gas stations.", explanation: "The video points out that public charging infrastructure is far less common than traditional gas stations." },
+    { q: "2. What additional problem exists with public EV charging stations when drivers reach them?", choices: ["A) They only accept cash.", "B) They are illegal in big cities.", "C) Many of the chargers are out of order or broken.", "D) They require special licenses."], ans: "C) Many of the chargers are out of order or broken.", explanation: "Many chargers are broken or unresponsive, leaving drivers stranded." },
     { q: "3. Compared to refueling a gas car, how is charging an electric vehicle described?", choices: ["A) It takes much longer and is inconvenient.", "B) It takes only 5 seconds.", "C) It is as quick as buying coffee.", "D) It is automatic while driving."], ans: "A) It takes much longer and is inconvenient.", explanation: "Charging takes significantly longer than pumping gas, creating inconvenience during long trips." },
-    { q: "4. What situation often happens at working charging stations due to long charging times?", choices: ["A) Driver parties", "B) Long lines of waiting cars", "C) Free car washes", "D) Discount sales"], ans: "B) Long lines of waiting cars", explanation: "Because each car takes a long time to charge, long lines frequently form at busy chargers." },
+    { q: "4. What situation often happens at working charging stations due to long charging times?", choices: ["A) Driver parties", "B) Free car washes", "C) Discount sales", "D) Long lines of waiting cars"], ans: "D) Long lines of waiting cars", explanation: "Because each car takes a long time to charge, long lines frequently form at busy chargers." },
     { q: "5. How does extremely cold weather affect electric car performance?", choices: ["A) It increases driving distance.", "B) It reduces driving range significantly.", "C) It makes the battery charge faster.", "D) It turns the car into a hybrid."], ans: "B) It reduces driving range significantly.", explanation: "Cold temperatures severely degrade battery efficiency and reduce driving range." },
-    { q: "6. What advice is implied for people living in very cold regions regarding electric cars?", choices: ["A) They should avoid buying electric cars.", "B) They should buy two electric cars.", "C) They should drive faster in winter.", "D) They should leave windows open."], ans: "A) They should avoid buying electric cars.", explanation: "Due to major range loss in freezing weather, EVs may not be suitable for cold climates." },
+    { q: "6. What advice is implied for people living in very cold regions regarding electric cars?", choices: ["A) They should buy two electric cars.", "B) They should drive faster in winter.", "C) They should avoid buying electric cars.", "D) They should leave windows open."], ans: "C) They should avoid buying electric cars.", explanation: "Due to major range loss in freezing weather, EVs may not be suitable for cold climates." },
     { q: "7. What is the typical lifespan of an electric car battery according to the video?", choices: ["A) 1 to 2 years", "B) 8 to 10 years", "C) 30 to 40 years", "D) Lifetime warranty"], ans: "B) 8 to 10 years", explanation: "EV battery packs generally last around 8 to 10 years before requiring replacement." },
-    { q: "8. What happens if an EV owner needs to replace the battery pack after its lifespan?", choices: ["A) The government pays for it.", "B) It costs a very high amount of money.", "C) It is completely free.", "D) The dealer swaps it for a gas engine."], ans: "B) It costs a very high amount of money.", explanation: "Battery replacement is extremely expensive, often costing thousands of dollars." },
+    { q: "8. What happens if an EV owner needs to replace the battery pack after its lifespan?", choices: ["A) The government pays for it.", "B) It is completely free.", "C) The dealer swaps it for a gas engine.", "D) It costs a very high amount of money."], ans: "D) It costs a very high amount of money.", explanation: "Battery replacement is extremely expensive, often costing thousands of dollars." },
     { q: "9. Why are car insurance premiums generally higher for electric vehicles?", choices: ["A) EVs drive faster than sports cars.", "B) Repair costs for EVs are significantly higher.", "C) Insurance companies dislike electric cars.", "D) EV drivers get more traffic tickets."], ans: "B) Repair costs for EVs are significantly higher.", explanation: "Because high-tech parts and batteries are costly to repair, insurance premiums are higher." },
-    { q: "10. What happens to the resale value of electric cars over time?", choices: ["A) It drops rapidly, causing financial loss.", "B) It increases every year.", "C) It stays exactly the same.", "D) It doubles after 5 years."], ans: "A) It drops rapidly, causing financial loss.", explanation: "EVs lose resale value quickly, meaning owners face steep losses when trying to sell them." }
+    { q: "10. What happens to the resale value of electric cars over time?", choices: ["A) It increases every year.", "B) It stays exactly the same.", "C) It drops rapidly, causing financial loss.", "D) It doubles after 5 years."], ans: "C) It drops rapidly, causing financial loss.", explanation: "EVs lose resale value quickly, meaning owners face steep losses when trying to sell them." }
 ];
 
 const vocabDataRaw = [
@@ -305,6 +305,7 @@ let isChecked = false;
 let selectedWord = "";
 let selectedOption = "";
 let vocabData = [];
+let tries = 3;
 
 let preferredVoice = null;
 
@@ -355,6 +356,7 @@ function switchMode(mode) {
 
 function loadQuestion() {
     isChecked = false;
+    tries = 3; // 各問題の開始時に残機数をリセット
     document.getElementById('resultMsg').textContent = "";
     const btn = document.getElementById('mainActionBtn');
     btn.textContent = "Check Answer";
@@ -521,9 +523,22 @@ function handleMainAction() {
             }
             
             resultMsg.innerHTML = "Excellent! ✨";
+            resultMsg.style.color = "var(--correct-green)";
             btn.textContent = "Next →";
         } else {
-            resultMsg.innerHTML = "Try again!";
+            tries--;
+            if (tries > 0) {
+                resultMsg.innerHTML = `Try again! (${tries} left)`;
+                resultMsg.style.color = "var(--wrong-red)";
+            } else {
+                isChecked = true;
+                if (currentMode === 'vocab' || currentMode === 'reorder') speak(correctText);
+                
+                document.getElementById('interactive-area').innerHTML = `<div class="final-sentence" style="color:var(--wrong-red);">${correctText}</div>`;
+                resultMsg.innerHTML = "Correct Answer:";
+                resultMsg.style.color = "var(--wrong-red)";
+                btn.textContent = "Next →";
+            }
         }
     } else {
         currentIdx++;
