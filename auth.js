@@ -1,5 +1,5 @@
 (function() {
-    const SECRET_CODE = "stepforward";
+    const SECRET_CODE = "asatama";
     const userInput = prompt("パスコードを入力してください:");
 
     if (userInput !== SECRET_CODE) {
