@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eiken Pre-2: Useful Expressions (Cons / Negative)</title>
+<script src="auth.js"></script>
+<style>
+    :root {
+        --primary-purple: #4a148c;
+        --soft-purple: #f3e5f5;
+        --accent-yellow: #fff9c4;
+        --border-purple: #ce93d8;
+        --correct-green: #2e7d32;
+        --wrong-red: #c62828;
+        --base-font: "Hiragino Maru Gothic ProN", "Hiragino Maru Gothic Pro", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    body {
+        font-family: var(--base-font);
+        background-color: #faf7ff;
+        color: var(--primary-purple);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        margin: 0;
+    }
+
+    header { text-align: center; margin-bottom: 20px; width: 100%; max-width: 900px; }
+    h1 { font-size: 1.6rem; margin-bottom: 5px; color: var(--primary-purple); }
+    .sub-title { font-size: 0.95rem; color: #555; margin-bottom: 15px; font-weight: bold; }
+
+    .control-panel {
+        display: flex; align-items: center; justify-content: center; gap: 20px;
+        background: rgba(255,255,255,0.6); padding: 10px 25px; border-radius: 50px; display: inline-flex;
+        margin-bottom: 20px; border: 1px solid var(--border-purple);
+    }
+
+    .settings { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: bold; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #9c27b0; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab-btn {
+        padding: 8px 18px; border-radius: 20px; border: 2px solid var(--primary-purple);
+        background: white; color: var(--primary-purple); cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: 0.3s;
+    }
+    .tab-btn.active { background: var(--primary-purple); color: white; }
+
+    .container {
+        background: white; max-width: 900px; width: 100%; padding: 35px; border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; box-sizing: border-box;
+    }
+
+    .question-box {
+        font-size: 1.1rem; background-color: var(--accent-yellow); border-bottom: 4px solid #fbc02d;
+        padding: 25px 20px; border-radius: 20px; margin-bottom: 20px; text-align: center;
+        min-height: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold;
+    }
+    .grammar-hint { font-size: 0.85rem; color: #d32f2f; margin-top: 5px; font-weight: bold; }
+
+    .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 750px; margin: 0 auto; }
+    .choice-btn, .word-btn {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 15px 20px; border-radius: 25px; cursor: pointer; font-size: 1rem; font-family: var(--base-font); font-weight: bold; transition: all 0.2s;
+        text-align: center;
+    }
+    .choice-btn:hover { background-color: #e1bee7; }
+
+    .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+    .word-btn.used { visibility: hidden; pointer-events: none; }
+
+    .answer-area {
+        min-height: 90px; border: 3px dashed var(--border-purple); border-radius: 20px; padding: 15px;
+        margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; background: #fff;
+    }
+
+    .answer-word {
+        background-color: var(--soft-purple); color: var(--primary-purple); border: 1px solid var(--border-purple);
+        padding: 10px 18px; border-radius: 15px; cursor: grab; font-size: 1.05rem; font-weight: bold;
+    }
+    .answer-word:active { cursor: grabbing; }
+    .answer-word.dragging { opacity: 0.4; border-style: dotted; }
+
+    .final-sentence {
+        font-size: 1.4rem; color: var(--primary-purple); font-weight: bold; padding: 20px;
+        line-height: 1.7; text-align: left; max-width: 800px; margin: 0 auto;
+    }
+
+    .action-btn {
+        background: #fbc02d; color: var(--primary-purple); border: none; padding: 16px 50px;
+        border-radius: 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #f9a825; margin-top: 15px;
+    }
+    .action-btn:disabled { background: #ccc; box-shadow: none; }
+
+    .video-card {
+        background: var(--soft-purple); padding: 30px; border-radius: 20px; border: 2px solid var(--border-purple);
+        text-align: center; margin-bottom: 20px;
+    }
+    .video-link-btn {
+        display: inline-block; background: #c62828; color: white; text-decoration: none;
+        padding: 15px 30px; border-radius: 30px; font-weight: bold; font-size: 1.1rem; margin-top: 15px;
+        box-shadow: 0 4px 10px rgba(198,40,40,0.3); transition: 0.3s;
+    }
+    .video-link-btn:hover { background: #b71c1c; transform: translateY(-2px); }
+
+    /* --- Print Styles --- */
+    #print-area { display: none; }
+    @media print {
+        .container, header, .no-print { display: none !important; }
+        #print-area { display: block; color: black; background: white; width: 100%; font-family: var(--base-font); }
+        .print-page { page-break-after: always; padding: 10px 20px; }
+        .print-title { font-size: 1.2rem; text-align: center; border-bottom: 1px solid #000; margin-bottom: 15px; padding-bottom: 5px; font-weight: bold; }
+        
+        .reading-box {
+            border: 1px solid #000; padding: 15px; margin-bottom: 20px; line-height: 1.6; font-size: 0.95rem;
+            background-color: #fafafa;
+        }
+        .reading-box ol { margin: 5px 0; padding-left: 20px; }
+        .reading-box li { margin-bottom: 6px; }
+        .video-intro { font-size: 0.85rem; color: #333; margin-top: 10px; font-style: italic; }
+
+        .print-vocab-q { margin-bottom: 12px; font-size: 0.9rem; display: flex; align-items: flex-end; }
+        .vocab-jp { width: 50%; }
+        .vocab-line { flex-grow: 1; border-bottom: 1px solid #000; height: 32px; }
+        .print-sentence-q { margin-bottom: 25px; }
+        .sentence-ja { font-size: 0.9rem; margin-bottom: 4px; font-weight: bold; }
+        .sentence-choices { font-style: italic; font-size: 0.85rem; margin-bottom: 8px; }
+        .sentence-line { border-bottom: 1px solid #000; height: 30px; margin-top: 0px; }
+
+        .video-q-box { margin-bottom: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 10px; }
+        .video-q-text { font-weight: bold; font-size: 0.9rem; }
+        .video-q-options { font-size: 0.85rem; margin-top: 5px; }
+
+        .eiken-section { font-family: "Times New Roman", "Georgia", "游明朝", serif; color: #000; line-height: 1.5; }
+        .eiken-header { text-align: center; font-size: 1.2rem; font-weight: bold; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 15px; }
+        .eiken-instructions { font-size: 0.9rem; margin-bottom: 15px; }
+        .eiken-topic-box { border: 2px solid #000; padding: 15px; margin-bottom: 20px; background-color: #fff; }
+        .eiken-topic-title { font-size: 1rem; font-weight: bold; text-decoration: underline; margin-bottom: 8px; }
+        .eiken-topic-text { font-size: 1.1rem; font-weight: bold; text-align: center; margin: 10px 0; }
+        .eiken-writing-lines { margin-top: 15px; }
+        .eiken-line { border-bottom: 1px solid #333; height: 36px; width: 100%; }
+    }
+</style>
+</head>
+<body>
+
+<header class="no-print">
+    <h1>英検準2級 Useful Expressions (Cons / Negative)</h1>
+    <div class="sub-title">Topic: Do you think more people will drive electric cars in the future?</div>
+
+    <div class="control-panel">
+        <div class="settings">
+            <span>Audio</span>
+            <label class="switch">
+                <input type="checkbox" id="audioToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-video" onclick="switchMode('video')">Part 1: Video</button>
+            <button class="tab-btn" id="tab-comprehension" onclick="switchMode('comprehension')">Part 2: Quiz (10)</button>
+            <button class="tab-btn" id="tab-vocab" onclick="switchMode('vocab')">Part 3: Vocab (18)</button>
+            <button class="tab-btn" id="tab-reorder" onclick="switchMode('reorder')">Part 4: Sentences (10)</button>
+        </div>
+    </div>
+</header>
+
+<div class="container no-print">
+    <div id="quiz-ui">
+        <div class="question-box">
+            <div id="questionText">Loading...</div>
+            <div id="hintText" class="grammar-hint"></div>
+        </div>
+        <div id="interactive-area"></div>
+        <div id="resultMsg" style="margin: 20px 0; font-size: 1.2rem; font-weight: bold;"></div>
+        <button class="action-btn" id="mainActionBtn" onclick="handleMainAction()" disabled>Check Answer</button>
+    </div>
+    <button onclick="window.print()" style="margin-top:20px; background:none; border:none; text-decoration:underline; cursor:pointer; color:#777; font-size: 0.75rem;">Worksheet (A4 印刷用) を出力する</button>
+</div>
+
+<div id="print-area">
+    <div class="print-page">
+        <div class="print-title">Part 1: Reading - 10 Problems with Electric Cars</div>
+        <div class="reading-box">
+            Today, electric cars are becoming popular, but buyers should consider these 10 real problems from the video:<br>
+            <ol>
+                <li><strong>Public chargers:</strong> Finding a working public charger can be difficult, and charging takes a long time.</li>
+                <li><strong>Unpredictable driving range:</strong> The driving range can change suddenly, especially in cold weather.</li>
+                <li><strong>Battery degradation:</strong> Over time, the car battery slowly loses its ability to hold energy.</li>
+                <li><strong>Tires:</strong> Electric cars are heavy, so their tires wear out much faster than normal cars.</li>
+                <li><strong>Cost of repairs:</strong> Fixing an electric car is very expensive because it needs special high-tech parts.</li>
+                <li><strong>Unknown long-term reliability:</strong> Because EVs are relatively new, their long-term reliability is still unknown.</li>
+                <li><strong>Battery failure:</strong> If the battery completely fails, replacing it costs a massive amount of money.</li>
+                <li><strong>Resale value:</strong> Electric cars lose their resale value quickly, so owners may lose money when selling them.</li>
+                <li><strong>Insurance:</strong> Car insurance for electric cars is much higher because repair costs are expensive.</li>
+                <li><strong>Price:</strong> The initial buying price of an electric car is still very high compared to gas cars.</li>
+            </ol>
+            Because of these issues and hidden costs, we need to think carefully before buying an electric car.
+        </div>
+        <div class="video-intro">
+            📺 <strong>YouTube Recommended Video:</strong> "10 Reasons You Should NEVER Buy An Electric Car"<br>
+            URL: https://www.youtube.com/watch?v=ocNfkVA28mg
+        </div>
+    </div>
+
+    <div class="print-page">
+        <div class="print-title">Part 2: Video Comprehension Questions</div>
+        <div id="print-video-content"></div>
+    </div>
+    <div class="print-page">
+        <div class="print-title">Part 3: Useful Vocabulary for Writing (Cons)</div>
+        <div id="print-vocab-content"></div>
+    </div>
+    <div class="print-page">
+        <div class="print-title">Part 4: Writing Sentence Structures (Cons)</div>
+        <div id="print-sentence-content"></div>
+    </div>
+    <div class="print-page eiken-section">
+        <div class="eiken-header">Part 5: Write An Essay</div>
+        <div class="eiken-instructions">
+            ● あなたの意見とその理由を 2 つ書きなさい。<br>
+            ● 語数の目安は <strong>50語〜60語</strong> です。<br>
+        </div>
+        <div class="eiken-topic-box">
+            <div class="eiken-topic-title">TOPIC</div>
+            <div class="eiken-topic-text">
+                Do you think more people will drive electric cars in the future?
+            </div>
+        </div>
+        <div class="eiken-writing-lines">
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+            <div class="eiken-line"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const videoQuestions = [
+    { q: "1. What is one major issue regarding charging stations compared to traditional gas stations?", choices: ["A) There are fewer charging stations than gas stations.", "B) Charging stations are free everywhere.", "C) Charging stations are faster than gas pumps.", "D) Gasoline is sold at charging stations."], ans: "A) There are fewer charging stations than gas stations.", explanation: "The video points out that public charging infrastructure is far less common than traditional gas stations." },
+    { q: "2. What additional problem exists with public EV charging stations when drivers reach them?", choices: ["A) They only accept cash.", "B) Many of them are out of order or broken.", "C) They are illegal in big cities.", "D) They require special licenses."], ans: "B) Many of them are out of order or broken.", explanation: "Many charging stations are broken or unresponsive, leaving drivers stranded." },
+    { q: "3. Compared to refueling a gas car, how is charging an electric vehicle described?", choices: ["A) It takes much longer and is inconvenient.", "B) It takes only 5 seconds.", "C) It is as quick as buying coffee.", "D) It is automatic while driving."], ans: "A) It takes much longer and is inconvenient.", explanation: "Charging takes significantly longer than pumping gas, creating inconvenience during long trips." },
+    { q: "4. What situation often happens at working charging stations due to long charging times?", choices: ["A) Driver parties", "B) Long lines of waiting cars", "C) Free car washes", "D) Discount sales"], ans: "B) Long lines of waiting cars", explanation: "Because each car takes a long time to charge, long lines frequently form at busy chargers." },
+    { q: "5. How does extremely cold weather affect electric car performance?", choices: ["A) It increases driving distance.", "B) It reduces driving range significantly.", "C) It makes the battery charge faster.", "D) It turns the car into a hybrid."], ans: "B) It reduces driving range significantly.", explanation: "Cold temperatures severely degrade battery efficiency and reduce driving range." },
+    { q: "6. What advice is implied for people living in very cold regions regarding electric cars?", choices: ["A) They should avoid buying electric cars.", "B) They should buy two electric cars.", "C) They should drive faster in winter.", "D) They should leave windows open."], ans: "A) They should avoid buying electric cars.", explanation: "Due to major range loss in freezing weather, EVs may not be suitable for cold climates." },
+    { q: "7. What is the typical lifespan of an electric car battery according to the video?", choices: ["A) 1 to 2 years", "B) 8 to 10 years", "C) 30 to 40 years", "D) Lifetime warranty"], ans: "B) 8 to 10 years", explanation: "EV battery packs generally last around 8 to 10 years before requiring replacement." },
+    { q: "8. What happens if an EV owner needs to replace the battery pack after its lifespan?", choices: ["A) The government pays for it.", "B) It costs a very high amount of money.", "C) It is completely free.", "D) The dealer swaps it for a gas engine."], ans: "B) It costs a very high amount of money.", explanation: "Battery replacement is extremely expensive, often costing thousands of dollars." },
+    { q: "9. Why are car insurance premiums generally higher for electric vehicles?", choices: ["A) EVs drive faster than sports cars.", "B) Repair costs for EVs are significantly higher.", "C) Insurance companies dislike electric cars.", "D) EV drivers get more traffic tickets."], ans: "B) Repair costs for EVs are significantly higher.", explanation: "Because high-tech parts and batteries are costly to repair, insurance premiums are higher." },
+    { q: "10. What happens to the resale value of electric cars over time?", choices: ["A) It drops rapidly, causing financial loss.", "B) It increases every year.", "C) It stays exactly the same.", "D) It doubles after 5 years."], ans: "A) It drops rapidly, causing financial loss.", explanation: "EVs lose resale value quickly, meaning owners face steep losses when trying to sell them." }
+];
+
+const vocabDataRaw = [
+    { en: "public charger", jp: "公共の充電器（充電スタンド）", dummy: ["gas pump", "private garage", "car battery"] },
+    { en: "gas station", jp: "ガソリンスタンド", dummy: ["bus stop", "charging station", "car wash"] },
+    { en: "out of order", jp: "故障して（動かない）", dummy: ["out of time", "in order", "on sale"] },
+    { en: "inconvenient", jp: "不便な", dummy: ["convenient", "comfortable", "creative"] },
+    { en: "take a long time to charge", jp: "充電に長い時間がかかる", dummy: ["take a short time to drive", "take a break from work", "take a look at cars"] },
+    { en: "long lines of cars", jp: "車の長い列（順番待ち）", dummy: ["a lot of cars", "fast speed of cars", "small groups of cars"] },
+    { en: "cold weather", jp: "寒冷な気候（寒い天気）", dummy: ["warm weather", "hot summer", "rainy season"] },
+    { en: "reduce driving range", jp: "走行距離（可能距離）を減らす", dummy: ["increase driving speed", "improve driving skills", "reduce car prices"] },
+    { en: "battery degradation", jp: "バッテリーの劣化", dummy: ["battery price", "car design", "engine power"] },
+    { en: "replace the battery", jp: "バッテリーを交換する", dummy: ["clean the battery", "buy a new car", "charge the battery"] },
+    { en: "high repair cost", jp: "高い修理費", dummy: ["low repair cost", "cheap car insurance", "high gasoline price"] },
+    { en: "expensive insurance", jp: "高額な車両保険", dummy: ["cheap insurance", "safe driving", "new car model"] },
+    { en: "hidden cost", jp: "隠れたコスト（見えにくい費用）", dummy: ["total price", "discount cost", "special offer"] },
+    { en: "drop in value", jp: "（価値・価格が）下落する", dummy: ["increase in value", "keep the same price", "become popular"] },
+    { en: "lose money", jp: "お金を失う（損をする）", dummy: ["make money", "save money", "spend money"] },
+    { en: "cold region", jp: "寒い地域", dummy: ["warm country", "big city", "busy town"] },
+    { en: "pay high costs", jp: "高い費用を支払う", dummy: ["pay low costs", "get free service", "save high costs"] },
+    { en: "resale value", jp: "再販価格（売却価値）", dummy: ["rental price", "original price", "tax rate"] }
+];
+
+const sentenceData = [
+    { ja: "ガソリンスタンドと比較して、充電スタンドの数は少ないです。", en: "Compared to gas stations, there are fewer charging stations.", hint: "ヒント：Compared to ~（〜と比較して）を使って表現しましょう。" },
+    { ja: "多くの充電器は、故障中であることが多いです。", en: "Many chargers are often out of order.", hint: "ヒント：be out of order（故障している）を使いましょう。" },
+    { ja: "電気自動車は充電に長い時間がかかるため、とても不便です。", en: "Electric cars are very inconvenient because they take a long time to charge.", hint: "ヒント：take a long time to charge（充電に長い時間がかかる）を使いましょう。" },
+    { ja: "ドライバーは、充電スタンドで車の長い列に並んで待たなければなりません。", en: "Drivers have to wait in long lines of cars at charging stations.", hint: "ヒント：wait in long lines of cars（車の長い列で待つ）の形にしましょう。" },
+    { ja: "寒い気候の中では、電気自動車の走行距離は短くなってしまいます。", en: "In cold weather, the driving range of electric cars is reduced.", hint: "ヒント：driving range（走行距離）を主語にしてみましょう。" },
+    { ja: "寒い地域に住んでいる人々は、電気自動車を買わない方がよいです。", en: "People living in cold regions should not buy electric cars.", hint: "ヒント：People living in ~（〜に住んでいる人々）で始めましょう。" },
+    { ja: "もしバッテリーを交換することになれば、非常に高いコストを払わなければなりません。", en: "If you have to replace the battery, you must pay a very high cost.", hint: "ヒント：replace the battery（バッテリーを交換する）を使いましょう。" },
+    { ja: "電気自動車の修理費は高いため、車両保険の費用も高くなります。", en: "Because repair costs are high, insurance for electric cars is also expensive.", hint: "ヒント：Because S V（〜なので）を使って理由を表しましょう。" },
+    { ja: "車を買う際には、このような見えないコストを忘れてはいけません。", en: "We should not forget these hidden costs when buying a car.", hint: "ヒント：hidden costs（隠れたコスト）を使いましょう。" },
+    { ja: "電気自動車は価値がすぐに落ちるため、売るときに大損をすることになります。", en: "Electric cars lose their value quickly, so owners lose a lot of money when selling them.", hint: "ヒント：lose their value（価値を失う）を使って表現しましょう。" }
+];
+
+let currentMode = 'video';
+let currentIdx = 0;
+let userSentence = [];
+let isChecked = false;
+let selectedWord = "";
+let selectedOption = "";
+let vocabData = [];
+
+let preferredVoice = null;
+
+function loadVoices() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length === 0) return;
+    const usVoices = voices.filter(v => v.lang.startsWith("en"));
+    preferredVoice = usVoices.find(v => v.name.includes("Samantha") || v.name.includes("Google US English")) || usVoices[0] || voices[0];
+}
+
+if (typeof window !== 'undefined' && window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+}
+
+function speak(text) {
+    if (!document.getElementById('audioToggle').checked) return;
+    if (!('speechSynthesis' in window)) return;
+    if (!preferredVoice) loadVoices();
+
+    window.speechSynthesis.cancel();
+    const uttr = new SpeechSynthesisUtterance(text);
+    if (preferredVoice) uttr.voice = preferredVoice;
+    uttr.lang = 'en-US';
+    uttr.rate = 0.8;
+    window.speechSynthesis.speak(uttr);
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function switchMode(mode) {
+    currentMode = mode;
+    currentIdx = 0;
+    if(mode === 'vocab') {
+        vocabData = [...vocabDataRaw];
+        shuffleArray(vocabData);
+    }
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`tab-${mode}`).classList.add('active');
+    loadQuestion();
+}
+
+function loadQuestion() {
+    isChecked = false;
+    document.getElementById('resultMsg').textContent = "";
+    const btn = document.getElementById('mainActionBtn');
+    btn.textContent = "Check Answer";
+    btn.style.display = "inline-block";
+    btn.disabled = true;
+
+    const area = document.getElementById('interactive-area');
+    const hintBox = document.getElementById('hintText');
+    const qBox = document.getElementById('questionText');
+    area.innerHTML = "";
+    hintBox.textContent = "";
+
+    if (currentMode === 'video') {
+        qBox.textContent = "Part 1: Watch the Video";
+        btn.style.display = "none";
+        area.innerHTML = `
+            <div class="video-card">
+                <h2>10 Reasons You Should NEVER Buy An Electric Car</h2>
+                <p>動画を見て、電気自動車（EV）が抱える10個のリアルな問題点を確認しましょう！</p>
+                <a href="https://www.youtube.com/watch?v=ocNfkVA28mg" target="_blank" class="video-link-btn">▶ YouTubeで動画を再生する</a>
+            </div>
+        `;
+    } else if (currentMode === 'comprehension') {
+        const item = videoQuestions[currentIdx];
+        qBox.textContent = item.q;
+        
+        const grid = document.createElement('div');
+        grid.className = "choices-grid";
+        item.choices.forEach(c => {
+            const b = document.createElement('button');
+            b.className = "choice-btn";
+            b.textContent = c;
+            b.onclick = () => {
+                if(isChecked) return;
+                selectedOption = c;
+                document.querySelectorAll('.choice-btn').forEach(btnEl => btnEl.style.backgroundColor = "var(--soft-purple)");
+                b.style.backgroundColor = "#d1c4e9";
+                btn.disabled = false;
+            };
+            grid.appendChild(b);
+        });
+        area.appendChild(grid);
+    } else if (currentMode === 'vocab') {
+        const item = vocabData[currentIdx];
+        qBox.textContent = item.jp;
+        
+        let choices = [item.en, ...item.dummy];
+        shuffleArray(choices);
+        
+        const grid = document.createElement('div');
+        grid.className = "choices-grid";
+        choices.forEach(c => {
+            const b = document.createElement('button');
+            b.className = "choice-btn";
+            b.textContent = c;
+            b.onclick = () => {
+                if(isChecked) return;
+                selectedWord = c;
+                document.querySelectorAll('.choice-btn').forEach(btnEl => btnEl.style.backgroundColor = "var(--soft-purple)");
+                b.style.backgroundColor = "#d1c4e9";
+                btn.disabled = false;
+                speak(c);
+            };
+            grid.appendChild(b);
+        });
+        area.appendChild(grid);
+    } else if (currentMode === 'reorder') {
+        const item = sentenceData[currentIdx];
+        qBox.textContent = item.ja;
+        hintBox.textContent = item.hint;
+        userSentence = [];
+        
+        const ansArea = document.createElement('div');
+        ansArea.className = "answer-area";
+        ansArea.id = "answerArea";
+        ansArea.ondragover = (e) => e.preventDefault();
+        ansArea.ondrop = drop;
+        area.appendChild(ansArea);
+
+        const bank = document.createElement('div');
+        bank.className = "word-bank";
+        let words = item.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "");
+        let shuffleWords = [...words];
+        shuffleArray(shuffleWords);
+
+        shuffleWords.forEach((w, idx) => {
+            const b = document.createElement('button');
+            b.className = "word-btn";
+            b.textContent = w;
+            b.id = "word-" + idx;
+            b.onclick = () => {
+                userSentence.push({text: w, btnId: b.id});
+                b.classList.add('used');
+                renderSentence();
+                btn.disabled = false;
+            };
+            bank.appendChild(b);
+        });
+        area.appendChild(bank);
+    }
+}
+
+function renderSentence() {
+    const area = document.getElementById('answerArea');
+    area.innerHTML = "";
+    userSentence.forEach((obj, i) => {
+        const s = document.createElement('div');
+        s.className = "answer-word";
+        s.textContent = obj.text;
+        s.draggable = true;
+        s.dataset.index = i;
+        s.ondragstart = (e) => e.dataTransfer.setData("text", e.target.dataset.index);
+        s.onclick = () => {
+            document.getElementById(obj.btnId).classList.remove('used');
+            userSentence.splice(i, 1);
+            renderSentence();
+            if(userSentence.length === 0) document.getElementById('mainActionBtn').disabled = true;
+        };
+        area.appendChild(s);
+    });
+}
+
+function drop(e) {
+    e.preventDefault();
+    const fromIdx = e.dataTransfer.getData("text");
+    const toIdx = e.target.dataset.index;
+    if (toIdx !== undefined) {
+        const movedItem = userSentence.splice(fromIdx, 1)[0];
+        userSentence.splice(toIdx, 0, movedItem);
+        renderSentence();
+    }
+}
+
+function handleMainAction() {
+    const btn = document.getElementById('mainActionBtn');
+    const resultMsg = document.getElementById('resultMsg');
+
+    if (!isChecked) {
+        let isCorrect = false;
+        let correctText = "";
+
+        if (currentMode === 'comprehension') {
+            correctText = videoQuestions[currentIdx].ans;
+            isCorrect = (selectedOption === correctText);
+        } else if (currentMode === 'vocab') {
+            correctText = vocabData[currentIdx].en;
+            isCorrect = (selectedWord === correctText);
+        } else if (currentMode === 'reorder') {
+            correctText = sentenceData[currentIdx].en;
+            const currentDOMWords = [...document.querySelectorAll('.answer-word')].map(el => el.textContent.trim());
+            let userStr = currentDOMWords.join(" ").replace(/\s+([.,])/g, "$1").trim();
+            const normalize = (str) => str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+            isCorrect = (normalize(userStr) === normalize(correctText));
+        }
+
+        if (isCorrect) {
+            isChecked = true;
+            if (currentMode === 'vocab' || currentMode === 'reorder') speak(correctText);
+            
+            if (currentMode === 'comprehension') {
+                document.getElementById('interactive-area').innerHTML = `<div class="final-sentence">Correct! ${videoQuestions[currentIdx].explanation}</div>`;
+            } else {
+                document.getElementById('interactive-area').innerHTML = `<div class="final-sentence">${correctText}</div>`;
+            }
+            
+            resultMsg.innerHTML = "Excellent! ✨";
+            btn.textContent = "Next →";
+        } else {
+            resultMsg.innerHTML = "Try again!";
+        }
+    } else {
+        currentIdx++;
+        let max = 0;
+        if (currentMode === 'comprehension') max = videoQuestions.length;
+        else if (currentMode === 'vocab') max = vocabData.length;
+        else if (currentMode === 'reorder') max = sentenceData.length;
+
+        if (currentIdx < max) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-ui').innerHTML = "<h3>Great Job! You've mastered these expressions.</h3>";
+            btn.style.display = "none";
+        }
+    }
+}
+
+function preparePrint() {
+    document.getElementById('print-video-content').innerHTML = videoQuestions.map((q, i) => `
+        <div class="video-q-box">
+            <div class="video-q-text">${q.q}</div>
+            <div class="video-q-options">${q.choices.join("<br>")}</div>
+        </div>
+    `).join('');
+
+    document.getElementById('print-vocab-content').innerHTML = vocabDataRaw.map((d, i) => `
+        <div class="print-vocab-q"><span class="vocab-jp">${i+1}. ${d.jp}</span><div class="vocab-line"></div></div>
+    `).join('');
+
+    document.getElementById('print-sentence-content').innerHTML = sentenceData.map((d, i) => {
+        let words = d.en.replace(/([.,])/g, " $1").split(" ").filter(w => w !== "");
+        shuffleArray(words);
+        return `
+            <div class="print-sentence-q">
+                <div class="sentence-ja">${i+1}. ${d.ja}</div>
+                <div class="sentence-choices">[ ${words.join(" / ")} ]</div>
+                <div class="sentence-line"></div>
+            </div>`;
+    }).join('');
+}
+
+window.onload = () => {
+    vocabData = [...vocabDataRaw];
+    shuffleArray(vocabData);
+    loadQuestion();
+    preparePrint();
+};
+</script>
+</body>
+</html>
